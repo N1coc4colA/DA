@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>win.pid.lookup.sh</file>
+    </qresource>
+</RCC>
