@@ -4,7 +4,14 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets dbus
+QT       += core gui widgets dbus x11extras core-private
+
+greaterThan(QT_MAJOR_VERSION, 4) {
+  QT += widgets widgets-private
+  # Qt >= 5.8
+  greaterThan(QT_MAJOR_VERSION, 5)|greaterThan(QT_MINOR_VERSION, 7): QT += gui-private
+  else: QT += platformsupport-private
+}
 
 TARGET = libDA
 TEMPLATE = lib
@@ -36,7 +43,13 @@ SOURCES += \
     element.cpp \
     proxypainter.cpp \
     emptyitemdelegate.cpp \
-    libraryban.cpp
+    libraryban.cpp \
+    effectwidget.cpp \
+    graphictools.cpp \
+    imagepopup.cpp \
+    dsplitedbar.cpp \
+    dsplitedwindow.cpp \
+    multicolors.cpp
 
 HEADERS += \
         libda_global.h \ 
@@ -51,7 +64,14 @@ HEADERS += \
     element.h \
     proxypainter.h \
     emptyitemdelegate.h \
-    libraryban.h
+    libraryban.h \
+    effectwidget.h \
+    graphictools.h \
+    effectwidget_p.h \
+    imagepopup.h \
+    dsplitedbar.h \
+    dsplitedwindow.h \
+    multicolors.h
 
 unix {
     target.path = /usr/lib
