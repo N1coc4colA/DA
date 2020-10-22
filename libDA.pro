@@ -13,8 +13,14 @@ greaterThan(QT_MAJOR_VERSION, 4) {
   else: QT += platformsupport-private
 }
 
+CONFIG += link_pkgconfig
+PKGCONFIG = dtkwidget dtkcore x11 glib-2.0
+
+unix:!macx: LIBS += -lKF5WindowSystem
+
 TARGET = libDA
 TEMPLATE = lib
+
 
 DEFINES += LIBDA_LIBRARY
 
@@ -28,9 +34,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
-
-CONFIG += link_pkgconfig
-PKGCONFIG = dtkwidget dtkcore
 
 SOURCES += \
     notificationmanager.cpp \
@@ -47,9 +50,11 @@ SOURCES += \
     effectwidget.cpp \
     graphictools.cpp \
     imagepopup.cpp \
-    dsplitedbar.cpp \
-    dsplitedwindow.cpp \
-    multicolors.cpp
+    multicolors.cpp \
+    trayicon.cpp \
+    macros.cpp \
+    wintools.cpp \
+    pwl.cpp
 
 HEADERS += \
         libda_global.h \ 
@@ -69,14 +74,13 @@ HEADERS += \
     graphictools.h \
     effectwidget_p.h \
     imagepopup.h \
-    dsplitedbar.h \
-    dsplitedwindow.h \
-    multicolors.h
+    multicolors.h \
+    trayicon.h \
+    macros.h \
+    wintools.h \
+    pwl.h
 
 unix {
     target.path = /usr/lib
     INSTALLS += target
 }
-
-RESOURCES += \
-    main.qrc

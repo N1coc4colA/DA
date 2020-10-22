@@ -1,5 +1,7 @@
 #include "proxypainter.h"
 
+LDA_BEGIN_NAMESPACE
+
 ProxyPainter::ProxyPainter(QPainter *pa, QObject *src, bool lock_any)
 {
     check = src;
@@ -15,3 +17,5 @@ void ProxyPainter::setSource(QObject *checker, QPainter *pa)
         }
     }
 }
+
+LDA_END_NAMESPACE

@@ -209,12 +209,16 @@ public:
      * @brief leftMargin
      * @return
      */
-    int leftMargin() const;
+    int leftMargin();
     /**
      * @brief setLeftMargin
      * @param margin
      */
     void setLeftMargin(int margin);
+
+    QHBoxLayout *leftLayout() const;
+    QHBoxLayout *centerLayout() const;
+    QHBoxLayout *rightLayout() const;
 
 Q_SIGNALS:
     /**

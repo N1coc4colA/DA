@@ -2,7 +2,8 @@
 #define NOTIFICATIONMANAGER_H
 
 #include "libda_global.h"
-#include <QObject>
+#include <QDBusAbstractInterface>
+#include <QDBusPendingReply>
 
 LDA_BEGIN_NAMESPACE
 
@@ -58,6 +59,26 @@ private:
     void unMergeRaw(QStringList raw);
 
     friend class NotificationManager;
+};
+
+class NotificationsInterface : public QDBusAbstractInterface
+{
+    Q_OBJECT
+public:
+    static inline const char *staticInterfaceName()
+    { return "org.freedesktop.Notifications"; }
+
+public:
+    NotificationsInterface(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent = nullptr);
+    ~NotificationsInterface();
+
+public Q_SLOTS:
+    QDBusPendingReply<> CloseNotification(uint in0);
+    QDBusPendingReply<uint> Notify(const QString &in0, uint in1, const QString &in2, const QString &in3, const QString &in4, const QStringList &in5, const QVariantMap &in6, int in7);
+
+Q_SIGNALS:
+    inline void ActionInvoked(uint in0, const QString &in1);
+    inline void NotificationClosed(uint in0, uint in1);
 };
 
 class LIBDA_SHARED_EXPORT NotificationManager : public QObject

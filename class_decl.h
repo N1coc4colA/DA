@@ -3,25 +3,25 @@
 
 namespace Dtk {
 namespace Addons {
-    class Element;
-    class ElementList;
-    class EmptyItemDelegate;
+    /*09/2020*/
     class Iconic;
-    class LibraryBan;
-    class ProxyPainter;
     class DAddonApplication;
     class DAddonIconButton;
     class DAddonSplittedBar;
     class DAddonSplittedWindow;
+    class EffectWidget;
     class NotificationsInterface;
     class NotificationObject;
     class NotificationManager;
-}
-}
-
-namespace DEE {
-namespace Store {
-
+    class VisualEffect;
+    class LibraryBan;
+    /*10/2020*/
+    class ImagePopup;
+    class Multicolors;
+    class Element;
+    class ElementList;
+    class ProxyPainter;
+    class EmptyItemDelegate;
 }
 }
 

@@ -1,11 +1,14 @@
 #ifndef GRAPHICTOOLS_H
 #define GRAPHICTOOLS_H
 
+#include "libda_global.h"
 #include <QGraphicsBlurEffect>
 #include <QGraphicsEffect>
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QPainter>
+
+LDA_BEGIN_NAMESPACE
 
 /**
  * @brief VisualEffect class is used to perform effects on images, like blur or filters
@@ -43,6 +46,8 @@ public:
     ChannelSplitDirection direction = ChannelSplitDirection::Top;
 };
 
+LDA_END_NAMESPACE
+
 /**
  * @brief Image alpha gradient on the image
  * @param input
@@ -60,7 +65,7 @@ QImage transformAlpha(QImage input, Qt::Edge edge);
  * @param padding
  * @return Image with applyed settings
  */
-QImage splitChannel(QImage src, int channel = VisualEffect::ColorChannel::Red, VisualEffect::ChannelSplitMode mode = VisualEffect::ChannelSplitMode::Exclude, VisualEffect::ChannelSplitDirection direction = VisualEffect::ChannelSplitDirection::Left, int padding = 5);
+QImage splitChannel(QImage src, int channel = Dtk::Addons::VisualEffect::ColorChannel::Red, Dtk::Addons::VisualEffect::ChannelSplitMode mode = Dtk::Addons::VisualEffect::ChannelSplitMode::Exclude, Dtk::Addons::VisualEffect::ChannelSplitDirection direction = Dtk::Addons::VisualEffect::ChannelSplitDirection::Left, int padding = 5);
 
 /**
  * @brief Apply the QGraphicsEffect you want
@@ -93,6 +98,6 @@ QImage bindToGSA(QImage src);
  * @param radius
  * @return Image with applyed settings for channels options
  */
-QImage blendChannel(QImage src, int channel = VisualEffect::ColorChannel::Red, VisualEffect::ChannelSplitMode mode = VisualEffect::ChannelSplitMode::Exclude, int radius = 5);
+QImage blendChannel(QImage src, int channel = Dtk::Addons::VisualEffect::ColorChannel::Red, Dtk::Addons::VisualEffect::ChannelSplitMode mode = Dtk::Addons::VisualEffect::ChannelSplitMode::Exclude, int radius = 5);
 
 #endif // GRAPHICTOOLS_H

@@ -70,32 +70,32 @@ QImage transformAlpha(QImage input, Qt::Edge edge)
 
 //When using inclusion it is the opposite
 
-QRgb pixelBlender(QRgb src, VisualEffect::ChannelSplitMode mode, int channel)
+QRgb pixelBlender(QRgb src, Dtk::Addons::VisualEffect::ChannelSplitMode mode, int channel)
 {
     QRgb output = 0;
     switch (mode) {
-    case VisualEffect::ChannelSplitMode::Exclude: {
+    case Dtk::Addons::VisualEffect::ChannelSplitMode::Exclude: {
         output = src;
-        if ((VisualEffect::ColorChannel::Red & channel) == VisualEffect::Red) {
+        if ((Dtk::Addons::VisualEffect::ColorChannel::Red & channel) == Dtk::Addons::VisualEffect::Red) {
             output = QRgb(qRgba(qRed(0), qGreen(output), qBlue(output), qAlpha(output)));
-        } if ((VisualEffect::ColorChannel::Green & channel) == VisualEffect::Green) {
+        } if ((Dtk::Addons::VisualEffect::ColorChannel::Green & channel) == Dtk::Addons::VisualEffect::Green) {
             output = QRgb(qRgba(qRed(output), qGreen(0), qBlue(output), qAlpha(output)));
-        } if ((VisualEffect::ColorChannel::Blue & channel) == VisualEffect::Blue) {
+        } if ((Dtk::Addons::VisualEffect::ColorChannel::Blue & channel) == Dtk::Addons::VisualEffect::Blue) {
             output = QRgb(qRgba(qRed(output), qGreen(output), qBlue(0), qAlpha(output)));
-        } if ((VisualEffect::ColorChannel::Alpha & channel) == VisualEffect::Alpha) {
+        } if ((Dtk::Addons::VisualEffect::ColorChannel::Alpha & channel) == Dtk::Addons::VisualEffect::Alpha) {
             output = QRgb(qRgba(qRed(output), qGreen(output), qBlue(output), qAlpha(0)));
         }
         break;
     }
-    case VisualEffect::ChannelSplitMode::Include: {
+    case Dtk::Addons::VisualEffect::ChannelSplitMode::Include: {
         output = qRgba(0,0,0,0);
-        if ((VisualEffect::ColorChannel::Red & channel) == VisualEffect::Red) {
+        if ((Dtk::Addons::VisualEffect::ColorChannel::Red & channel) == Dtk::Addons::VisualEffect::Red) {
             output = QRgb(qRgba(qRed(src), qGreen(output), qBlue(output), qAlpha(output)));
-        } if ((VisualEffect::ColorChannel::Green & channel) == VisualEffect::Green) {
+        } if ((Dtk::Addons::VisualEffect::ColorChannel::Green & channel) == Dtk::Addons::VisualEffect::Green) {
             output = QRgb(qRgba(qRed(output), qGreen(src), qBlue(output), qAlpha(output)));
-        } if ((VisualEffect::ColorChannel::Blue & channel) == VisualEffect::Blue) {
+        } if ((Dtk::Addons::VisualEffect::ColorChannel::Blue & channel) == Dtk::Addons::VisualEffect::Blue) {
             output = QRgb(qRgba(qRed(output), qGreen(output), qBlue(src), qAlpha(output)));
-        } if ((VisualEffect::ColorChannel::Alpha & channel) == VisualEffect::Alpha) {
+        } if ((Dtk::Addons::VisualEffect::ColorChannel::Alpha & channel) == Dtk::Addons::VisualEffect::Alpha) {
             output = QRgb(qRgba(qRed(output), qGreen(output), qBlue(output), qAlpha(src)));
         }
         break;
@@ -104,7 +104,7 @@ QRgb pixelBlender(QRgb src, VisualEffect::ChannelSplitMode mode, int channel)
     return output;
 }
 
-QImage blendChannel(QImage src, int channel, VisualEffect::ChannelSplitMode mode, int radius)
+QImage blendChannel(QImage src, int channel, Dtk::Addons::VisualEffect::ChannelSplitMode mode, int radius)
 {
     int x_len = 0, y_len = 0, useAsHeight = src.height(), useAsWidth = src.width();
     QImage output = src;
@@ -124,7 +124,7 @@ QImage blendChannel(QImage src, int channel, VisualEffect::ChannelSplitMode mode
     return output;
 }
 
-QImage splitChannel(QImage src, int channel, VisualEffect::ChannelSplitMode mode, VisualEffect::ChannelSplitDirection direction, int padding)
+QImage splitChannel(QImage src, int channel, Dtk::Addons::VisualEffect::ChannelSplitMode mode, Dtk::Addons::VisualEffect::ChannelSplitDirection direction, int padding)
 {
     int x_len = 0, y_len = 0, useAsHeight = src.height(), useAsWidth = src.width();
     QImage output = src;
@@ -133,10 +133,10 @@ QImage splitChannel(QImage src, int channel, VisualEffect::ChannelSplitMode mode
     bool hor = true;
 
     switch (direction) {
-    case VisualEffect::ChannelSplitDirection::Top: hor = false; break;
-    case VisualEffect::ChannelSplitDirection::Bottom: hor = false; pad = -padding; break;
-    case VisualEffect::ChannelSplitDirection::Left: pad = -padding; break;
-    case VisualEffect::ChannelSplitDirection::Right: break;
+    case Dtk::Addons::VisualEffect::ChannelSplitDirection::Top: hor = false; break;
+    case Dtk::Addons::VisualEffect::ChannelSplitDirection::Bottom: hor = false; pad = -padding; break;
+    case Dtk::Addons::VisualEffect::ChannelSplitDirection::Left: pad = -padding; break;
+    case Dtk::Addons::VisualEffect::ChannelSplitDirection::Right: break;
     }
 
     while(x_len<useAsWidth) {

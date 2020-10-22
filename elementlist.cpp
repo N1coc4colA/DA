@@ -2,6 +2,8 @@
 #include "element.h"
 #include "emptyitemdelegate.h"
 
+LDA_BEGIN_NAMESPACE
+
 ElementList::ElementList(QWidget *parent) : QListWidget(parent)
 {
    // this->setItemDelegate(new EmptyItemDelegate());
@@ -49,3 +51,5 @@ void ElementList::setRadiusOnElement(Element *e, int *r)
 {
     e->rad = r;
 }
+
+LDA_END_NAMESPACE

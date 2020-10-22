@@ -24,8 +24,10 @@
 
 #include "daddonsplittedwindow.h"
 #include "daddonsplittedbar.h"
+#include "multicolors.h"
 
 #include <QResizeEvent>
+#include <QDebug>
 
 LDA_BEGIN_NAMESPACE
 
@@ -33,11 +35,9 @@ DAddonSplittedWindow::DAddonSplittedWindow(QWidget *parent, bool blur, DBlurEffe
 {
     this->setAttribute(Qt::WA_TranslucentBackground);
     m_leftw = new DBlurEffectWidget(this);
-    m_rightw = new QWidget(this);
-    m_rightw->setStyleSheet("background-color: white;");
+    m_rightw = new MultiColors(this);
 
     m_leftw->setFixedSize(m_leftwidth, this->height());
-    m_rightw->setFixedSize(this->width() - m_leftwidth, this->height());
     m_rightw->move(m_leftwidth, 0);
     m_leftw->move(0,0);
 
@@ -46,6 +46,7 @@ DAddonSplittedWindow::DAddonSplittedWindow(QWidget *parent, bool blur, DBlurEffe
 
     m_bar = new DAddonSplittedBar(this);
     m_bar->setBlurBackground(true);
+    this->resize(this->size());
 }
 
 QWidget *DAddonSplittedWindow::leftWidget() const {return m_leftw;}
@@ -53,18 +54,24 @@ QWidget *DAddonSplittedWindow::leftWidget() const {return m_leftw;}
 QWidget *DAddonSplittedWindow::rightWidget() const {return m_rightw;}
 
 void DAddonSplittedWindow::resizeEvent(QResizeEvent *e) {
-    int tmp_w = e->size().width() - m_leftwidth;
+    int tmp_w = this->width() - m_leftwidth;
+
     if (m_rightw != nullptr) {
-        m_rightw->setFixedSize(tmp_w, e->size().height());
+        m_rightw->setFixedWidth(tmp_w);
+        m_rightw->setFixedHeight(this->height());
+        m_rightw->move(m_leftwidth,0);
+        m_rightw->raise();
     }
 
     if (m_bottomw != nullptr) {
         m_bottomw->setFixedWidth(tmp_w);
         m_bottomw->move(m_leftwidth, e->size().height() - m_bottomw->height());
+        m_bottomw->raise();
     }
 
     m_leftw->setFixedHeight(e->size().height());
     m_bar->setFixedWidth(e->size().width());
+    m_bar->raise();
 
     QWidget::resizeEvent(e);
 }
@@ -80,17 +87,18 @@ void DAddonSplittedWindow::setLeftAreaWidth(int width)
 
 void DAddonSplittedWindow::setRightWidget(QWidget *w)
 {
-    w->setParent(this);
     if (isOriginal == true) {
-        m_rightw->~QWidget();
         isOriginal = false;
+        m_rightw->~QWidget();
     }
     m_rightw = w;
     m_rightw->move(m_leftwidth, 0);
+    m_rightw->raise();
     m_bar->raise();
     if (m_bottomw != nullptr) {
         m_bottomw->raise();
     }
+    update();
 }
 
 DAddonSplittedBar *DAddonSplittedWindow::splitedbar() const

@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <QPaintEvent>
 #include <QPainter>
+#include <QDebug>
 
 LDA_BEGIN_NAMESPACE
 
@@ -24,7 +25,7 @@ public:
 
 protected:
     void paintEvent(QPaintEvent *e) override;
-    void resizeEvent(QResizeEvent *e) override {QWidget::resizeEvent(e); update(); }
+    inline void resizeEvent(QResizeEvent *e) override {qDebug() << this->size(); QWidget::resizeEvent(e); update(); }
 };
 
 LDA_END_NAMESPACE

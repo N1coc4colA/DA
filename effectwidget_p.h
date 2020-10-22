@@ -7,7 +7,7 @@
 
 LDA_BEGIN_NAMESPACE
 
-class LIBDA_SHARED_EXPORT EffectWidgetPrivate : public DTK_CORE_NAMESPACE::DObjectPrivate
+class EffectWidgetPrivate : public DTK_CORE_NAMESPACE::DObjectPrivate
 {
 public:
     EffectWidgetPrivate(EffectWidget *qq);

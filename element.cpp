@@ -10,6 +10,8 @@
 #include <QTime>
 #include <QDrag>
 
+LDA_BEGIN_NAMESPACE
+
 Element::Element(int h, QWidget *parent, Qt::WindowFlags f) : QFrame(parent, f)
 {
     m_height = h;
@@ -111,3 +113,5 @@ void DerivedElement::paint(ProxyPainter *p, const QPaintEvent *event)
     p->setFont(f);
     p->drawText(10, 60, QTime::currentTime().toString("hh:mm:ss"));
 }
+
+LDA_END_NAMESPACE

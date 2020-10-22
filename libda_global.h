@@ -3,8 +3,7 @@
 
 #include <QtCore/qglobal.h>
 #include "class_decl.h"
-
-#pragma message("Your are using C++ library based on Qt and Dtk components maintained by @n1coc4cola")
+#include "macros.h"
 
 #if defined(LIBDA_GLOBAL_H)
     #define LIBDA_SHARED_EXPORT Q_DECL_EXPORT

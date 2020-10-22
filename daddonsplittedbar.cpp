@@ -210,7 +210,7 @@ void DAddonSplittedBarPrivate::init()
     centerArea->setMaximumWidth(q->left_margin);
 
     buttonArea->setWindowFlag(Qt::WindowTransparentForInput);
-    buttonArea->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    buttonArea->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
     QHBoxLayout *buttonLayout = new QHBoxLayout(buttonArea);
     buttonLayout->setContentsMargins(0, 0, 0, 0);
     buttonLayout->setSpacing(0);
@@ -223,12 +223,12 @@ void DAddonSplittedBarPrivate::init()
     rightArea->setWindowFlag(Qt::WindowTransparentForInput);
     rightArea->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     rightLayout->setContentsMargins(0, 0, 0, 0);
-    auto rightAreaLayout = new QHBoxLayout(rightArea);
+    QHBoxLayout *rightAreaLayout = new QHBoxLayout(rightArea);
     rightAreaLayout->setContentsMargins(0, 0, 0, 0);
     rightAreaLayout->setMargin(0);
     rightAreaLayout->setSpacing(0);
     rightAreaLayout->addLayout(rightLayout);
-    rightAreaLayout->addWidget(buttonArea);
+    rightAreaLayout->addWidget(buttonArea, 0, Qt::AlignmentFlag::AlignLeft);
 
     separatorTop->setFixedHeight(1);
     separatorTop->hide();
@@ -772,9 +772,11 @@ bool DAddonSplittedBar::eventFilter(QObject *obj, QEvent *event)
 
     if (event->type() == QEvent::MouseButtonPress &&
             static_cast<QMouseEvent *>(event)->button() == Qt::RightButton &&
-            (obj ==d->minButton || obj == d->maxButton ||
-            obj == d->closeButton || obj == d->optionButton ||
-            obj == d->quitFullButton))
+            (obj ==d->minButton ||
+             obj == d->maxButton ||
+             obj == d->closeButton ||
+             obj == d->optionButton ||
+             obj == d->quitFullButton))
     {
         event->accept(); // button on titlebar should not show kwin menu
         return true;
@@ -817,12 +819,18 @@ bool DAddonSplittedBar::eventFilter(QObject *obj, QEvent *event)
 
 bool DAddonSplittedBar::event(QEvent *e)
 {
+    D_D(DAddonSplittedBar);
     if (e->type() == QEvent::LayoutRequest) {
         D_D(DAddonSplittedBar);
 
         d->updateCenterArea();
+    } elif (e->type() == QEvent::Paint) {
+        QPainter *p = new QPainter(this);
+        QColor col = d->blurWidget->maskColor();
+        p->setOpacity(1);
+        p->fillRect(QRect(0,0, left_margin, this->height()), QBrush(QColor(col.red(), col.green(), col.blue(), 150)));
+        p->~QPainter();
     }
-
     return QFrame::event(e);
 }
 
@@ -842,6 +850,11 @@ void DAddonSplittedBar::resizeEvent(QResizeEvent *event)
     }
 
     return QWidget::resizeEvent(event);
+}
+
+int DAddonSplittedBar::leftMargin()
+{
+    return left_margin;
 }
 
 void DAddonSplittedBar::setCustomWidget(QWidget *w, bool fixCenterPos)
@@ -1219,6 +1232,25 @@ void DAddonSplittedBar::setLeftMargin(int margin)
     if (d->blurWidget != nullptr) {
         d->blurWidget->move(left_margin, 0);
     }
+}
+
+QHBoxLayout *DAddonSplittedBar::leftLayout() const
+{
+    D_DC(DAddonSplittedBar);
+    return d->leftLayout;
+}
+
+
+QHBoxLayout *DAddonSplittedBar::centerLayout() const
+{
+    D_DC(DAddonSplittedBar);
+    return d->centerLayout;
+}
+
+QHBoxLayout *DAddonSplittedBar::rightLayout() const
+{
+    D_DC(DAddonSplittedBar);
+    return d->rightLayout;
 }
 
 #ifndef QT_NO_MENU

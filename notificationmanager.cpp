@@ -11,38 +11,6 @@
 
 LDA_BEGIN_NAMESPACE
 
-class NotificationsInterface : public QDBusAbstractInterface
-{
-    Q_OBJECT
-public:
-    static inline const char *staticInterfaceName()
-    { return "org.freedesktop.Notifications"; }
-
-public:
-    NotificationsInterface(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent = nullptr);
-
-    ~NotificationsInterface();
-
-public Q_SLOTS: // METHODS
-    inline QDBusPendingReply<> CloseNotification(uint in0)
-    {
-        QList<QVariant> argumentList;
-        argumentList << QVariant::fromValue(in0);
-        return asyncCallWithArgumentList(QStringLiteral("CloseNotification"), argumentList);
-    }
-
-    inline QDBusPendingReply<uint> Notify(const QString &in0, uint in1, const QString &in2, const QString &in3, const QString &in4, const QStringList &in5, const QVariantMap &in6, int in7)
-    {
-        QList<QVariant> argumentList;
-        argumentList << QVariant::fromValue(in0) << QVariant::fromValue(in1) << QVariant::fromValue(in2) << QVariant::fromValue(in3) << QVariant::fromValue(in4) << QVariant::fromValue(in5) << QVariant::fromValue(in6) << QVariant::fromValue(in7);
-        return asyncCallWithArgumentList(QStringLiteral("Notify"), argumentList);
-    }
-
-Q_SIGNALS: // SIGNALS
-    void ActionInvoked(uint in0, const QString &in1);
-    void NotificationClosed(uint in0, uint in1);
-};
-
 NotificationsInterface::NotificationsInterface(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent)
     : QDBusAbstractInterface(service, path, staticInterfaceName(), connection, parent)
 {
@@ -50,6 +18,20 @@ NotificationsInterface::NotificationsInterface(const QString &service, const QSt
 
 NotificationsInterface::~NotificationsInterface()
 {
+}
+
+QDBusPendingReply<> NotificationsInterface::CloseNotification(uint in0)
+{
+    QList<QVariant> argumentList;
+    argumentList << QVariant::fromValue(in0);
+    return asyncCallWithArgumentList(QStringLiteral("CloseNotification"), argumentList);
+}
+
+QDBusPendingReply<uint> NotificationsInterface::Notify(const QString &in0, uint in1, const QString &in2, const QString &in3, const QString &in4, const QStringList &in5, const QVariantMap &in6, int in7)
+{
+    QList<QVariant> argumentList;
+    argumentList << QVariant::fromValue(in0) << QVariant::fromValue(in1) << QVariant::fromValue(in2) << QVariant::fromValue(in3) << QVariant::fromValue(in4) << QVariant::fromValue(in5) << QVariant::fromValue(in6) << QVariant::fromValue(in7);
+    return asyncCallWithArgumentList(QStringLiteral("Notify"), argumentList);
 }
 
 

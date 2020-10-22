@@ -8,7 +8,6 @@ class QProcess;
 class AbstractPlugin;
 
 class AbstractPlugin {
-    Q_OBJECT
 public:
     explicit AbstractPlugin(QObject *p = nullptr);
     virtual ~AbstractPlugin();
@@ -29,16 +28,33 @@ protected:
     const QString m_target = QApplication::applicationName();
 };
 
+/**
+ * @brief The LibraryBan class is used to filter dynamically linked libraries
+ */
 class LibraryBan : public QLibrary
 {
     Q_OBJECT
 public:
     explicit LibraryBan(QObject *parent = nullptr);
     ~LibraryBan();
+    /**
+     * @brief Says if a library is using one of the libs in libsToBan
+     * @return
+     */
     inline bool mustBeBan() { return m_ban; }
+    /**
+     * @brief Libraries that you get notified when checking
+     */
     QStringList libsToBan;
+    /**
+     * @brief Loads a plugin from the lib
+     * @return AbstractPlugin you can bind to your own
+     */
     AbstractPlugin *loadPlugin();
 signals:
+    /**
+     * @brief Emitted when a lib of libsToBan is detected
+     */
     void checkFailed();
 
 public slots:
