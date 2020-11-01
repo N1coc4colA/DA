@@ -41,18 +41,46 @@ public:
     DAddonSplittedBar *splitedbar() const;
 
     /**
+     * @brief Width of the right area
+     * @return Width currently used
+     */
+    int leftAreaWidth();
+
+    /**
+     * @brief Switch from non full screen (so Maximized and lower) to full and conversly
+     */
+    void switchFullScreen();
+
+    /**
+     * @brief To know if the right side widget fills to the top, including the titlebar (goes behind it)
+     * @return
+     */
+    bool isEnabledTopFill();
+
+    /**
+     * @brief To know if the right side widget fills to the bottom, including the bottom widget space (behind it)
+     * @return
+     */
+    bool isEnabledBottomFill();
+
+public Q_SLOTS:
+
+    /**
      * @brief Have the left widget container use BehindWin blur
      * @param Left blur state
      */
     void setLeftBlur(bool leftBlur);
+
     /**
      * @brief Left container blur mode (DBlurEffectWidget)
      */
     void setLeftBlurMode(DBlurEffectWidget::BlurMode);
+
     /**
      * @brief setLeftBlendMode
      */
     void setLeftBlendMode(DBlurEffectWidget::BlendMode);
+
     /**
      * @brief Left container blur color (DBlurEffectWidget)
      * @param color
@@ -64,6 +92,7 @@ public:
      * @param w
      */
     void setRightWidget(QWidget *w);
+
     /**
      * @brief Use the bottom widget you want on the right side widget (on top)
      * @param w
@@ -75,26 +104,30 @@ public:
      * @param width
      */
     void setLeftAreaWidth(int width);
-    /**
-     * @brief Width of the right area
-     * @return Width currently used
-     */
-    int leftAreaWidth();
 
-    /**
-     * @brief Switch from non full screen (so Maximized and lower) to full and conversly
-     */
-    void switchFullScreen();
     /**
      * @brief Force use of fullscreen, even if the user won't
      * @param force
      */
     void enableForceFullScreen(bool force);
+
     /**
      * @brief Set if the window have to be shown in fullscreen or not
      * @param full
      */
     void setFullScreen(bool full);
+
+    /**
+     * @brief Fill the area behind the title bar with the right side widget
+     * @param enable
+     */
+    void setFillTop(bool enable = true);
+
+    /**
+     * @brief Fill the area behind the bottom widget with the right side widget or don't
+     * @param enable
+     */
+    void setFillBottom(bool enable = true);
 
 protected:
     void resizeEvent(QResizeEvent *e) override;
@@ -106,6 +139,8 @@ private:
     QWidget *m_rightw = nullptr;
     bool isOriginal = true;
     bool forceFullScreen = false;
+    bool fillBottom = false;
+    bool fillTop = false;
     int m_leftwidth = 250;
 };
 

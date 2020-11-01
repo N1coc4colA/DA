@@ -65,6 +65,7 @@
 
 #include <DObjectPrivate>
 #include <DApplication>
+#include <iostream>
 
 #include "dpathbuf.h"
 
@@ -634,6 +635,7 @@ DAddonSplittedBar::DAddonSplittedBar(QWidget *parent) :
     }
 
     this->setIcon(qApp->windowIcon());
+    //setBlurBackground(true);
 }
 
 #ifndef QT_NO_MENU
@@ -817,6 +819,17 @@ bool DAddonSplittedBar::eventFilter(QObject *obj, QEvent *event)
     return QWidget::eventFilter(obj, event);
 }
 
+QColor DAddonSplittedBar::getColor()
+{
+    D_D(DAddonSplittedBar);
+
+    if (!d->blurWidget->isVisible()) {
+        return palette().color(backgroundRole());
+    } else {
+        return d->blurWidget->maskColor();
+    }
+}
+
 bool DAddonSplittedBar::event(QEvent *e)
 {
     D_D(DAddonSplittedBar);
@@ -825,11 +838,13 @@ bool DAddonSplittedBar::event(QEvent *e)
 
         d->updateCenterArea();
     } elif (e->type() == QEvent::Paint) {
-        QPainter *p = new QPainter(this);
-        QColor col = d->blurWidget->maskColor();
-        p->setOpacity(1);
-        p->fillRect(QRect(0,0, left_margin, this->height()), QBrush(QColor(col.red(), col.green(), col.blue(), 150)));
-        p->~QPainter();
+        if (d->blurWidget) {
+            QPainter *p = new QPainter(this);
+            QColor col = d->blurWidget->maskColor();
+            p->setOpacity(1);
+            p->fillRect(QRect(0,0, left_margin, this->height()), QBrush(QColor(col.red(), col.green(), col.blue(), 150)));
+            p->~QPainter();
+        }
     }
     return QFrame::event(e);
 }

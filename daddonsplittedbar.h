@@ -313,6 +313,8 @@ private:
     QTimer *timer;
     int oldHeight = 40;
 
+    QColor getColor();
+
     D_DECLARE_PRIVATE(DAddonSplittedBar)
     D_PRIVATE_SLOT(void _q_toggleWindowState())
     D_PRIVATE_SLOT(void _q_showMinimized())

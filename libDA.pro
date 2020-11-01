@@ -54,7 +54,8 @@ SOURCES += \
     trayicon.cpp \
     macros.cpp \
     wintools.cpp \
-    pwl.cpp
+    pwl.cpp \
+    indraggablewidget.cpp
 
 HEADERS += \
         libda_global.h \ 
@@ -78,7 +79,8 @@ HEADERS += \
     trayicon.h \
     macros.h \
     wintools.h \
-    pwl.h
+    pwl.h \
+    indraggablewidget.h
 
 unix {
     target.path = /usr/lib

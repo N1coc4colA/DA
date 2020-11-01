@@ -28,6 +28,7 @@
 
 #include <QResizeEvent>
 #include <QDebug>
+#include <iostream>
 
 LDA_BEGIN_NAMESPACE
 
@@ -49,17 +50,27 @@ DAddonSplittedWindow::DAddonSplittedWindow(QWidget *parent, bool blur, DBlurEffe
     this->resize(this->size());
 }
 
-QWidget *DAddonSplittedWindow::leftWidget() const {return m_leftw;}
-
-QWidget *DAddonSplittedWindow::rightWidget() const {return m_rightw;}
-
 void DAddonSplittedWindow::resizeEvent(QResizeEvent *e) {
     int tmp_w = this->width() - m_leftwidth;
 
     if (m_rightw != nullptr) {
         m_rightw->setFixedWidth(tmp_w);
-        m_rightw->setFixedHeight(this->height());
-        m_rightw->move(m_leftwidth,0);
+        int margins = 0;
+
+        if (!fillTop) {
+            margins += splitedbar()->height();
+            m_rightw->move(m_leftwidth,splitedbar()->height());
+        } else {
+            m_rightw->move(m_leftwidth,0);
+        }
+
+        if (!fillBottom) {
+            if (bottomWidget()) {
+                margins += bottomWidget()->height();
+            }
+        }
+
+        m_rightw->setFixedHeight(this->height() -margins);
         m_rightw->raise();
     }
 
@@ -76,7 +87,6 @@ void DAddonSplittedWindow::resizeEvent(QResizeEvent *e) {
     QWidget::resizeEvent(e);
 }
 
-int DAddonSplittedWindow::leftAreaWidth() {return m_leftwidth;}
 
 void DAddonSplittedWindow::setLeftAreaWidth(int width)
 {
@@ -101,15 +111,6 @@ void DAddonSplittedWindow::setRightWidget(QWidget *w)
     update();
 }
 
-DAddonSplittedBar *DAddonSplittedWindow::splitedbar() const
-{
-    return m_bar;
-}
-
-QWidget *DAddonSplittedWindow::bottomWidget() const
-{
-    return m_bottomw;
-}
 
 void DAddonSplittedWindow::setBottomWidget(QWidget *w)
 {
@@ -143,5 +144,51 @@ void DAddonSplittedWindow::setFullScreen(bool full)
         window()->setWindowState(windowState() & ~Qt::WindowFullScreen);
     }
 }
+
+void DAddonSplittedWindow::setFillTop(bool enable)
+{
+    fillTop = enable;
+}
+
+void DAddonSplittedWindow::setFillBottom(bool enable)
+{
+    fillBottom = enable;
+}
+
+void DAddonSplittedWindow::setLeftBlur(bool enable)
+{
+    if (qobject_cast<DBlurEffectWidget *>(this->leftWidget())) {
+        qobject_cast<DBlurEffectWidget*>(m_leftw)->setBlurEnabled(enable);
+    }
+}
+
+void DAddonSplittedWindow::setLeftBlurMode(Dtk::Widget::DBlurEffectWidget::BlurMode mode)
+{
+    if (qobject_cast<DBlurEffectWidget *>(this->leftWidget())) {
+        qobject_cast<DBlurEffectWidget*>(m_leftw)->setMode(mode);
+    }
+}
+
+void DAddonSplittedWindow::setLeftBlendMode(DBlurEffectWidget::BlendMode mode)
+{
+    if (qobject_cast<DBlurEffectWidget *>(this->leftWidget())) {
+        qobject_cast<DBlurEffectWidget*>(m_leftw)->setBlendMode(mode);
+    }
+}
+
+void DAddonSplittedWindow::setLeftBlurColor(QColor color)
+{
+    if (qobject_cast<DBlurEffectWidget *>(this->leftWidget())) {
+        qobject_cast<DBlurEffectWidget*>(m_leftw)->setMaskColor(color);
+    }
+}
+
+int DAddonSplittedWindow::leftAreaWidth() {return m_leftwidth;}
+bool DAddonSplittedWindow::isEnabledTopFill() {return fillTop;}
+QWidget *DAddonSplittedWindow::leftWidget() const {return m_leftw;}
+bool DAddonSplittedWindow::isEnabledBottomFill() {return fillBottom;}
+QWidget *DAddonSplittedWindow::rightWidget() const {return m_rightw;}
+QWidget *DAddonSplittedWindow::bottomWidget() const {return m_bottomw;}
+DAddonSplittedBar *DAddonSplittedWindow::splitedbar() const {return m_bar;}
 
 LDA_END_NAMESPACE

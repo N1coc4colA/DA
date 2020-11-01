@@ -22,6 +22,8 @@ namespace Addons {
     class ElementList;
     class ProxyPainter;
     class EmptyItemDelegate;
+    /*31/10/20*/
+    class InDraggableWidget;
 }
 }
 
