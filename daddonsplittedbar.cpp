@@ -39,9 +39,9 @@
  *
  */
 
+#include "daddonapplication.h"
 #include "daddonsplittedbar.h"
 #include "daddonsplittedwindow.h"
-#include "daddonapplication.h"
 
 /*
  * Copyright (C) 2015 ~ 2017 Deepin Technology Co., Ltd.
@@ -136,14 +136,17 @@ DWIDGET_END_NAMESPACE
 #include <QMouseEvent>
 #include <QProcess>
 #include <QTimer>
+#include <QPropertyAnimation>
 
 #include <DWindowManagerHelper>
 
 LDA_BEGIN_NAMESPACE
 
-const int DefaultTitlebarHeight = 50;
-const int DefaultIconHeight = 32;
-const int DefaultIconWidth = 32;
+static const int DefaultTitlebarHeight = 50;
+static const int DefaultIconHeight = 32;
+static const int DefaultIconWidth = 32;
+static const int hiddenVisibleArea = 1;
+static const int hiddenAnimationSpeed = 5;
 
 DAddonSplittedBarPrivate::DAddonSplittedBarPrivate(DAddonSplittedBar *qq): DObjectPrivate(qq)
 {
@@ -166,7 +169,7 @@ void DAddonSplittedBarPrivate::init()
     maxButton       = new DWindowMaxButton;
     closeButton     = new DWindowCloseButton;
     optionButton    = new DWindowOptionButton;
-    quitFullButton  = new DImageButton;
+    quitFullButton  = new DWindowQuitFullButton;
     separatorTop    = new DHorizontalLine(q);
     separator       = new DHorizontalLine(q);
     titleLabel      = centerArea;
@@ -178,6 +181,8 @@ void DAddonSplittedBarPrivate::init()
     optionButton->installEventFilter(q);
     quitFullButton->installEventFilter(q);
 
+    buttonArea->setObjectName("DAddonSplittedBarButtonArea");
+    centerArea->setObjectName("DAddonSplittedBarCenterArea");
     optionButton->setObjectName("DAddonSplittedBarDWindowOptionButton");
     optionButton->setIconSize(QSize(DefaultTitlebarHeight, DefaultTitlebarHeight));
     minButton->setObjectName("DAddonSplittedBarDWindowMinButton");
@@ -186,7 +191,9 @@ void DAddonSplittedBarPrivate::init()
     maxButton->setIconSize(QSize(DefaultTitlebarHeight, DefaultTitlebarHeight));
     closeButton->setObjectName("DAddonSplittedBarDWindowCloseButton");
     closeButton->setIconSize(QSize(DefaultTitlebarHeight, DefaultTitlebarHeight));
-    quitFullButton->setObjectName("DAddonSplittedBarDWindowQuitFullscreenButton");
+    quitFullButton->setObjectName("DTitlebarDWindowQuitFullscreenButton");
+    quitFullButton->setAccessibleName("DTitlebarDWindowQuitFullscreenButton");
+    quitFullButton->setIconSize(QSize(DefaultTitlebarHeight, DefaultTitlebarHeight));
     quitFullButton->hide();
 
     iconLabel->setIconSize(QSize(DefaultIconWidth, DefaultIconHeight));
@@ -218,8 +225,8 @@ void DAddonSplittedBarPrivate::init()
     buttonLayout->addWidget(optionButton);
     buttonLayout->addWidget(minButton);
     buttonLayout->addWidget(maxButton);
-    buttonLayout->addWidget(closeButton);
     buttonLayout->addWidget(quitFullButton);
+    buttonLayout->addWidget(closeButton);
 
     rightArea->setWindowFlag(Qt::WindowTransparentForInput);
     rightArea->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
@@ -249,7 +256,7 @@ void DAddonSplittedBarPrivate::init()
     q->setFixedHeight(DefaultTitlebarHeight);
     q->setMinimumHeight(DefaultTitlebarHeight);
 
-    q->connect(quitFullButton, &DImageButton::clicked, q, [ = ]() {
+    q->connect(quitFullButton, &DWindowQuitFullButton::clicked, q, [ = ]() {
         bool isFullscreen = targetWindow()->windowState().testFlag(Qt::WindowFullScreen);
         if (isFullscreen) {
             targetWindow()->showNormal();
@@ -271,6 +278,8 @@ void DAddonSplittedBarPrivate::init()
     q->setIconMenu(this->automateIconMenu());
     QObject::connect(iconLabel, &DIconButton::clicked, q, &DAddonSplittedBar::showIconMenu);
 #endif
+
+    q->connect(q, &DAddonSplittedBar::setupMaximizedSettings, q, [this]() {this->handleMaximizingPreparation();});
 }
 
 QWidget *DAddonSplittedBarPrivate::targetWindow()
@@ -291,7 +300,7 @@ void DAddonSplittedBarPrivate::hideOnFullscreen()
     if (q->height() > 0) {
         q->setProperty("_restore_height", q->height());
     }
-    q->setFixedHeight(0);
+    //q->setFixedHeight(0);
 }
 
 void DAddonSplittedBarPrivate::showOnFullscreen()
@@ -312,17 +321,37 @@ void DAddonSplittedBarPrivate::updateFullscreen()
     }
 
     bool isFullscreen = targetWindow()->windowState().testFlag(Qt::WindowFullScreen);
+    bool isMaximized = targetWindow()->windowState().testFlag(Qt::WindowMaximized);
     auto mainWindow = qobject_cast<DAddonSplittedWindow *>(targetWindow());
-    if (!isFullscreen) {
+    bool value = true;
+
+    if (!isFullscreen && !isMaximized) {
         quitFullButton->hide();
         showOnFullscreen();
+        q->isHidden = !value;
+        q->isMaximized = !value;
+        q->move(q->x(), 0);
     } else {
         quitFullButton->show();
 
         q->setParent(mainWindow);
         q->show();
-        hideOnFullscreen();
+
+        q->isHidden = value;
+        if (isMaximized) {
+            q->isMaximized = value;
+        }
+
+        if (isFullscreen) {
+            hideOnFullscreen();
+        }
     }
+}
+
+void DAddonSplittedBarPrivate::handleMaximizingPreparation()
+{
+    D_Q(DAddonSplittedBar);
+    q->move(q->x(), 5 - q->height());
 }
 
 void DAddonSplittedBarPrivate::updateButtonsState(Qt::WindowFlags type)
@@ -359,6 +388,12 @@ void DAddonSplittedBarPrivate::updateButtonsState(Qt::WindowFlags type)
 
     bool showClose = (type.testFlag(Qt::WindowCloseButtonHint) || forceShow) && !forceHide;
     closeButton->setVisible(showClose);
+
+    if (q->isHidden) {
+        if (!q->isMaximized) {
+            //quitFullButton->setVisible(true);
+        }
+    }
 }
 
 void DAddonSplittedBarPrivate::updateButtonsFunc()
@@ -423,8 +458,7 @@ void DAddonSplittedBarPrivate::_q_toggleWindowState()
 
     if (parentWindow->isMaximized()) {
         parentWindow->showNormal();
-    } else if (!parentWindow->isFullScreen()
-               && (maxButton->isVisible())) {
+    } else if (!parentWindow->isFullScreen() && (maxButton->isVisible())) {
         parentWindow->showMaximized();
     }
 }
@@ -633,9 +667,96 @@ DAddonSplittedBar::DAddonSplittedBar(QWidget *parent) :
     if (parent && parent->window()->windowType() != Qt::Window) {
         d->optionButton->hide();
     }
-
+    this->setObjectName("DAddonSplittedBar");
     this->setIcon(qApp->windowIcon());
-    //setBlurBackground(true);
+}
+
+void DAddonSplittedBar::slideDown()
+{
+    if (runingAnim == false) {
+        runingAnim = true;
+    logic = new QTimer;
+    logic->setInterval(1);
+    logic->start();
+    connect(logic, &QTimer::timeout, this, [=]() {
+        if (this->y() < 0) {
+            this->move(this->x(), this->y() + hiddenAnimationSpeed);
+        } else {
+            if (this->y() > 0) {
+                this->move(this->x(), 0);
+            }
+            D_D(DAddonSplittedBar);
+            if (DAddonSplittedWindow *source = qobject_cast<DAddonSplittedWindow *>(d->targetWindow())) {
+                source->updatePositions();
+            }
+            logic->~QTimer();
+            runingAnim = false;
+        }
+    });}
+}
+
+void DAddonSplittedBar::slideUp()
+{
+    if (runingAnim == false) {
+        runingAnim = true;
+    logic = new QTimer;
+    logic->setInterval(1);
+    logic->start();
+    connect(logic, &QTimer::timeout, this, [=]() {
+        if (this->y() < hiddenVisibleArea - this->height()) {
+            this->move(this->x(), this->y() - hiddenAnimationSpeed);
+        } else {
+            if (this->y() > hiddenVisibleArea - this->height()) {
+                this->move(this->x(), hiddenVisibleArea - this->height());
+            }
+            D_D(DAddonSplittedBar);
+            if (DAddonSplittedWindow *source = qobject_cast<DAddonSplittedWindow *>(d->targetWindow())) {
+                source->updatePositions();
+            }
+            logic->~QTimer();
+            runingAnim = false;
+        }
+    });}
+}
+
+QList<QWidget *> getWidgetTree(QWidget *source, QList<QWidget *> *list = new QList<QWidget *>())
+{
+    if (source) {
+        list->append(source);
+        if (source->parentWidget()) {
+            getWidgetTree(source->parentWidget(), list);
+        }
+    }
+    return *list;
+}
+
+QPoint mapToTop(QWidget *source, int skip = 0)
+{
+    QPoint point = source->pos();
+    int i = 0;
+    QList<QWidget *> list = getWidgetTree(source);
+    while (i<list.length() - skip) {
+        qDebug() << i+1 << "/" << list.length() - skip;
+        point = list.at(i)->mapToParent(point);
+        i++;
+    }
+    return point;
+}
+
+void DAddonSplittedBar::enterEvent(QEvent *e)
+{
+    QFrame::enterEvent(e);
+    if (this->isHidden) {
+        this->slideDown();
+    }
+}
+
+void DAddonSplittedBar::leaveEvent(QEvent *e)
+{
+    QFrame::leaveEvent(e);
+    if (this->isHidden) {
+        this->slideUp();
+    }
 }
 
 #ifndef QT_NO_MENU
@@ -643,14 +764,12 @@ DAddonSplittedBar::DAddonSplittedBar(QWidget *parent) :
 QMenu *DAddonSplittedBar::menu() const
 {
     D_DC(DAddonSplittedBar);
-
     return d->menu;
 }
 
 QMenu *DAddonSplittedBar::leftMenu() const
 {
     D_DC(DAddonSplittedBar);
-
     return d->m_iconmenu;
 }
 
@@ -861,6 +980,12 @@ void DAddonSplittedBar::resizeEvent(QResizeEvent *event)
         d->blurWidget->resize(event->size().width() - left_margin, event->size().height());
         if (isFirstMarginSet == true) {
             d->blurWidget->move(left_margin, 0);
+        }
+    }
+
+    if (d->targetWindow()->windowState().testFlag(Qt::WindowFullScreen) || d->targetWindow()->window()->isMaximized()) {
+        if (this->isHidden) {
+            Q_EMIT setupMaximizedSettings();
         }
     }
 
@@ -1151,6 +1276,11 @@ bool DAddonSplittedBar::switchThemeMenuIsVisible() const
     D_DC(DAddonSplittedBar);
 
     return d->switchThemeMenu;
+}
+
+bool DAddonSplittedBar::isAutoHidden() const
+{
+    return isHidden;
 }
 
 void DAddonSplittedBar::setSwitchThemeMenuVisible(bool visible)

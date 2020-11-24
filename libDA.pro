@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets dbus x11extras core-private
+QT       += core gui widgets dbus xml svg x11extras core-private
 
 greaterThan(QT_MAJOR_VERSION, 4) {
   QT += widgets widgets-private
@@ -14,7 +14,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 }
 
 CONFIG += link_pkgconfig
-PKGCONFIG = dtkwidget dtkcore x11 glib-2.0
+PKGCONFIG = dtkwidget dtkcore dtkgui x11 glib-2.0
 
 unix:!macx: LIBS += -lKF5WindowSystem
 
@@ -55,7 +55,14 @@ SOURCES += \
     macros.cpp \
     wintools.cpp \
     pwl.cpp \
-    indraggablewidget.cpp
+    indraggablewidget.cpp \
+    iod.cpp \
+    touchsystem.cpp \
+    touchinterfacing.cpp \
+    swipinggesture.cpp \
+    stackedslidewidget.cpp \
+    dotsslidetabs.cpp \
+    dynamicsvgparser.cpp
 
 HEADERS += \
         libda_global.h \ 
@@ -80,7 +87,14 @@ HEADERS += \
     macros.h \
     wintools.h \
     pwl.h \
-    indraggablewidget.h
+    indraggablewidget.h \
+    iod.h \
+    touchsystem.h \
+    touchinterfacing.h \
+    swipinggesture.h \
+    stackedslidewidget.h \
+    dotsslidetabs.h \
+    dynamicsvgparser.h
 
 unix {
     target.path = /usr/lib

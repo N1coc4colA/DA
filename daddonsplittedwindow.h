@@ -6,7 +6,6 @@
 
 LDA_BEGIN_NAMESPACE
 
-
 DWIDGET_USE_NAMESPACE
 
 /**
@@ -45,11 +44,6 @@ public:
      * @return Width currently used
      */
     int leftAreaWidth();
-
-    /**
-     * @brief Switch from non full screen (so Maximized and lower) to full and conversly
-     */
-    void switchFullScreen();
 
     /**
      * @brief To know if the right side widget fills to the top, including the titlebar (goes behind it)
@@ -129,7 +123,25 @@ public Q_SLOTS:
      */
     void setFillBottom(bool enable = true);
 
+    /**
+     * @brief Use it only if you want to use special things not handled normally, or to replace the current window!
+     * @param bar
+     */
+    void setTitleBar(DAddonSplittedBar *bar);
+
+    /**
+     * @brief Calculates and moves widgets to their right places
+     */
+    void updatePositions();
+
+    /**
+     * @brief Switch from non full screen (so Maximized and lower) to full and conversly
+     */
+    void switchFullScreen();
+
+
 protected:
+    bool eventFilter(QObject *obj, QEvent *ev) override;
     void resizeEvent(QResizeEvent *e) override;
 
 private:

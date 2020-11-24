@@ -15,15 +15,25 @@ namespace Addons {
     class NotificationManager;
     class VisualEffect;
     class LibraryBan;
-    /*10/2020*/
+    /*xx/10/2020*/
     class ImagePopup;
-    class Multicolors;
+    class MultiColors;
     class Element;
     class ElementList;
     class ProxyPainter;
     class EmptyItemDelegate;
     /*31/10/20*/
+    class PWL;
+    class TrayIcon;
     class InDraggableWidget;
+    /*xx/11/20*/
+    class SwipingGesture;
+    class TouchInterfacing;
+    class IOD;
+    class StackedSlideWidget;
+    class DotsSlideTabs;
+    /*23/11/20*/
+    class DynamicSvgParser;
 }
 }
 

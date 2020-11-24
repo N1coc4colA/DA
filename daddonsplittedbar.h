@@ -12,6 +12,7 @@
 #include <dwindowmaxbutton.h>
 #include <dwindowminbutton.h>
 #include <dwindowoptionbutton.h>
+#include <dwindowquitfullbutton.h>
 #include <dplatformwindowhandle.h>
 #include <daboutdialog.h>
 #include <dapplication.h>
@@ -37,7 +38,7 @@ class DAddonSplittedWindow;
 class DAddonSplittedBarPrivate;
 
 /**
- * @brief Modern splited bar for DAddonSplittedWindow or others classes.
+ * @brief Modern splitted bar for DAddonSplittedWindow or others classes.
  */
 
 class LIBDA_SHARED_EXPORT DAddonSplittedBar : public QFrame, public DTK_CORE_NAMESPACE::DObject
@@ -216,6 +217,12 @@ public:
      */
     void setLeftMargin(int margin);
 
+    /**
+     * @brief Is the titlebar auto-hiding itself
+     * @return
+     */
+    bool isAutoHidden() const;
+
     QHBoxLayout *leftLayout() const;
     QHBoxLayout *centerLayout() const;
     QHBoxLayout *rightLayout() const;
@@ -239,6 +246,10 @@ Q_SIGNALS:
      * @param button
      */
     void mouseMoving(Qt::MouseButton button);
+    /**
+     * @brief Sent when window is maximized (after resizing to fill the area(s))
+     */
+    void setupMaximizedSettings();
 
 #ifdef DTK_TITLE_DRAG_WINDOW
     void mousePosPressed(Qt::MouseButtons buttons, QPoint pos);
@@ -305,15 +316,25 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void mouseDoubleClickEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+    void enterEvent(QEvent *e) override;
+    void leaveEvent(QEvent *e) override;
+
+    void slideDown();
+    void slideUp();
 
 private:
     int left_margin = 250;
     bool isFirstMarginSet = true;
+    bool isHidden = false;
+    bool isMaximized = false;
     QMenu *m_iconMenu;
     QTimer *timer;
     int oldHeight = 40;
 
     QColor getColor();
+
+    QTimer *logic;
+    bool runingAnim = false;
 
     D_DECLARE_PRIVATE(DAddonSplittedBar)
     D_PRIVATE_SLOT(void _q_toggleWindowState())
@@ -355,6 +376,9 @@ private:
     void _q_showMinimized();
     void _q_onTopWindowMotifHintsChanged(quint32 winId);
 
+    //Used to handle maximize/fullscreen titlebar hiding
+    void handleMaximizingPreparation();
+
 #ifndef QT_NO_MENU
     void _q_addDefaultMenuItems();
     void _q_helpActionTriggered();
@@ -379,7 +403,7 @@ private:
     DWindowMaxButton    *maxButton;
     DWindowCloseButton  *closeButton;
     DWindowOptionButton *optionButton;
-    DImageButton        *quitFullButton;
+    DWindowQuitFullButton *quitFullButton;
     DLabel              *titleLabel;
     QWidget             *customWidget = nullptr;
 

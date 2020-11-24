@@ -28,6 +28,7 @@
 
 #include <QResizeEvent>
 #include <QDebug>
+#include <QAction>
 #include <iostream>
 
 LDA_BEGIN_NAMESPACE
@@ -47,10 +48,35 @@ DAddonSplittedWindow::DAddonSplittedWindow(QWidget *parent, bool blur, DBlurEffe
 
     m_bar = new DAddonSplittedBar(this);
     m_bar->setBlurBackground(true);
+
     this->resize(this->size());
+    this->setObjectName("DAddonSplittedWindow");
+
+    QAction *act = new QAction;
+    act->setShortcut(QKeySequence(Qt::Key_F11));
+    this->addAction(act);
+
+    connect(act, &QAction::triggered, this, &DAddonSplittedWindow::switchFullScreen);
 }
 
-void DAddonSplittedWindow::resizeEvent(QResizeEvent *e) {
+bool DAddonSplittedWindow::eventFilter(QObject *obj, QEvent *ev)
+{
+    if (obj && m_bottomw && obj == m_bottomw) {
+        if (ev->type() == QEvent::Type::Resize) {
+            updatePositions();
+        }
+    }
+    return false;
+}
+
+void DAddonSplittedWindow::resizeEvent(QResizeEvent *e)
+{
+    updatePositions();
+    QWidget::resizeEvent(e);
+}
+
+void DAddonSplittedWindow::updatePositions()
+{
     int tmp_w = this->width() - m_leftwidth;
 
     if (m_rightw != nullptr) {
@@ -61,7 +87,24 @@ void DAddonSplittedWindow::resizeEvent(QResizeEvent *e) {
             margins += splitedbar()->height();
             m_rightw->move(m_leftwidth,splitedbar()->height());
         } else {
-            m_rightw->move(m_leftwidth,0);
+            if (m_bar) {
+                if (m_bar->isAutoHidden()) {
+                    if (fillTop) {
+                        if (m_bar->y() == (5 - m_bar->height())) {
+                            m_rightw->move(m_leftwidth, 5);
+                            margins -= 5;
+                        } else {
+                            m_rightw->move(m_leftwidth, 0);
+                        }
+                    } else {
+                        m_rightw->move(m_leftwidth, m_bar->y() + m_bar->height());
+                    }
+                } else {
+                    m_rightw->move(m_leftwidth,0);
+                }
+            } else {
+                m_rightw->move(m_leftwidth,0);
+            }
         }
 
         if (!fillBottom) {
@@ -76,23 +119,20 @@ void DAddonSplittedWindow::resizeEvent(QResizeEvent *e) {
 
     if (m_bottomw != nullptr) {
         m_bottomw->setFixedWidth(tmp_w);
-        m_bottomw->move(m_leftwidth, e->size().height() - m_bottomw->height());
+        m_bottomw->move(m_leftwidth, this->height() - m_bottomw->height());
         m_bottomw->raise();
     }
 
-    m_leftw->setFixedHeight(e->size().height());
-    m_bar->setFixedWidth(e->size().width());
+    m_leftw->setFixedHeight(this->height());
+    m_bar->setFixedWidth(this->width());
     m_bar->raise();
-
-    QWidget::resizeEvent(e);
 }
-
 
 void DAddonSplittedWindow::setLeftAreaWidth(int width)
 {
     m_leftw->setFixedWidth(width);
     m_leftwidth = width;
-    m_rightw->move(width, 0);
+    updatePositions();
 }
 
 void DAddonSplittedWindow::setRightWidget(QWidget *w)
@@ -108,6 +148,7 @@ void DAddonSplittedWindow::setRightWidget(QWidget *w)
     if (m_bottomw != nullptr) {
         m_bottomw->raise();
     }
+    updatePositions();
     update();
 }
 
@@ -116,8 +157,14 @@ void DAddonSplittedWindow::setBottomWidget(QWidget *w)
 {
     w->setParent(this);
     w->raise();
+
+    if (m_bottomw) {
+        removeEventFilter(m_bottomw);
+    }
     m_bottomw = w;
+    this->installEventFilter(m_bottomw);
     m_bar->raise();
+    updatePositions();
     update();
 }
 
@@ -181,6 +228,12 @@ void DAddonSplittedWindow::setLeftBlurColor(QColor color)
     if (qobject_cast<DBlurEffectWidget *>(this->leftWidget())) {
         qobject_cast<DBlurEffectWidget*>(m_leftw)->setMaskColor(color);
     }
+}
+
+void DAddonSplittedWindow::setTitleBar(DAddonSplittedBar *bar)
+{
+    this->m_bar->~DAddonSplittedBar();
+    this->m_bar = bar;
 }
 
 int DAddonSplittedWindow::leftAreaWidth() {return m_leftwidth;}

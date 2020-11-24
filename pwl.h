@@ -7,7 +7,8 @@
 LDA_BEGIN_NAMESPACE
 
 /**
- * @brief PWL class is used to track windows of a given process
+ * @brief PWL class is used to track windows of a given process,
+ * you can use it to embed an external window to your own.
  */
 class LIBDA_SHARED_EXPORT PWL : public QObject
 {
