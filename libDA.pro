@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets dbus xml svg x11extras core-private
+QT       += core gui widgets dbus xml svg network x11extras core-private
 
 greaterThan(QT_MAJOR_VERSION, 4) {
   QT += widgets widgets-private
@@ -62,7 +62,40 @@ SOURCES += \
     swipinggesture.cpp \
     stackedslidewidget.cpp \
     dotsslidetabs.cpp \
-    dynamicsvgparser.cpp
+    dynamicsvgparser.cpp \
+    abstractelement.cpp \
+    basicelements.cpp \
+    daddonapplication.cpp \
+    daddonbutton.cpp \
+    daddonsplittedbar.cpp \
+    daddonsplittedwindow.cpp \
+    diconic.cpp \
+    dotsslidetabs.cpp \
+    dynamicsvgparser.cpp \
+    effectwidget.cpp \
+    element.cpp \
+    elementlist.cpp \
+    emptyitemdelegate.cpp \
+    graphictools.cpp \
+    imagepopup.cpp \
+    indraggablewidget.cpp \
+    iod.cpp \
+    libraryban.cpp \
+    macros.cpp \
+    multicolors.cpp \
+    notificationmanager.cpp \
+    proxypainter.cpp \
+    pwl.cpp \
+    sharednam.cpp \
+    stackedslidewidget.cpp \
+    swipinggesture.cpp \
+    touchinterfacing.cpp \
+    touchsystem.cpp \
+    translationengine.cpp \
+    trayicon.cpp \
+    visualstackelement.cpp \
+    wintools.cpp \
+    xwengine.cpp
 
 HEADERS += \
         libda_global.h \ 
@@ -94,9 +127,51 @@ HEADERS += \
     swipinggesture.h \
     stackedslidewidget.h \
     dotsslidetabs.h \
-    dynamicsvgparser.h
+    dynamicsvgparser.h \
+    abstractelement.h \
+    basicelements.h \
+    class_decl.h \
+    daddonapplication.h \
+    daddonbutton.h \
+    daddonsplittedbar.h \
+    daddonsplittedwindow.h \
+    diconic.h \
+    dotsslidetabs.h \
+    dynamicsvgparser.h \
+    effectwidget_p.h \
+    effectwidget.h \
+    element.h \
+    elementlist.h \
+    emptyitemdelegate.h \
+    graphictools.h \
+    imagepopup.h \
+    indraggablewidget.h \
+    iod.h \
+    libda_global.h \
+    libraryban.h \
+    macros.h \
+    multicolors.h \
+    notificationmanager.h \
+    proxypainter.h \
+    pwl.h \
+    sharednam.h \
+    stackedslidewidget.h \
+    swipinggesture.h \
+    touchinterfacing.h \
+    touchsystem.h \
+    translationengine.h \
+    trayicon.h \
+    visualstackelement.h \
+    wintools.h \
+    xwengine.h
 
 unix {
     target.path = /usr/lib
     INSTALLS += target
 }
+
+SUBDIRS += \
+    libDA.pro
+
+RESOURCES += \
+    main.qrc

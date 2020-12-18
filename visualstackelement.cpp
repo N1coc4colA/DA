@@ -5,6 +5,8 @@
 #include <math.h>
 #include <iostream>
 
+LDA_BEGIN_NAMESPACE
+
 VisualStackElement::VisualStackElement(QWidget *parent) : QStackedWidget(parent), TouchInterfacing(this, ((TouchInterfacing *)this))
 {
     std::cout << "Constructor ended: " << __func__ << std::endl;
@@ -47,3 +49,5 @@ bool VisualStackElement::handleSwipeGesture(SwipingGesture *gesture)
         return false;
     }
 }
+
+LDA_END_NAMESPACE

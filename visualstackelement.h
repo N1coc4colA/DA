@@ -4,7 +4,9 @@
 #include "touchinterfacing.h"
 #include <QStackedWidget>
 
-class VisualStackElement : public QStackedWidget, public TouchInterfacing
+LDA_BEGIN_NAMESPACE
+
+class LIBDA_SHARED_EXPORT VisualStackElement : public QStackedWidget, public TouchInterfacing
 {
     Q_OBJECT
 public:
@@ -16,5 +18,7 @@ protected:
     bool handleOtherEvents(QEvent *event) override;
     void paintEvent(QPaintEvent *) override;
 };
+
+LDA_END_NAMESPACE
 
 #endif // VISUALSTACKELEMENT_H

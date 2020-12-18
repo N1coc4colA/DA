@@ -11,13 +11,13 @@ LDA_BEGIN_NAMESPACE
  * @param PID
  * @return
  */
-bool isFromPID(int winID, int PID);
+bool  LIBDA_SHARED_EXPORT isFromPID(int winID, int PID);
 /**
  * @brief Get the windows made by a PID
  * @param PID
  * @return
  */
-QList<int> pidToWins(int PID);
+QList<int> LIBDA_SHARED_EXPORT pidToWins(int PID);
 
 LDA_END_NAMESPACE
 

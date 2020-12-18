@@ -54,6 +54,8 @@
 
 using Sender = Dtk::Core::DUtil::DNotifySender;
 
+LDA_BEGIN_NAMESPACE
+
 const int MAX_STACK_FRAMES = 128;
 const QString strPath = QStandardPaths::standardLocations(QStandardPaths::ConfigLocation)[0] + "/dde-collapse.log";
 const QString cfgPath = QStandardPaths::standardLocations(QStandardPaths::ConfigLocation)[0] + "/dde-cfg.ini";
@@ -200,8 +202,6 @@ void handleSignals [[ noreturn ]] (int sig)
 
         exit(sig);
 }
-
-LDA_BEGIN_NAMESPACE
 
 DAddonApplication::DAddonApplication(int &argc, char **argv) : DApplication(argc, argv) {
     signal(SIGTERM, handleSignals);

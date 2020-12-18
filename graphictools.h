@@ -13,7 +13,7 @@ LDA_BEGIN_NAMESPACE
 /**
  * @brief VisualEffect class is used to perform effects on images, like blur or filters
  */
-class VisualEffect {
+class  LIBDA_SHARED_EXPORT VisualEffect {
 public:
     enum ColorChannel {
         Red =   8,

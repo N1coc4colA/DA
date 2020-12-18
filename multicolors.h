@@ -12,7 +12,7 @@ LDA_BEGIN_NAMESPACE
 /**
  * @brief Class used for Ui tests, generates multicolor squares
  */
-class MultiColors : public QWidget
+class LIBDA_SHARED_EXPORT MultiColors : public QWidget
 {
     Q_OBJECT
 public:

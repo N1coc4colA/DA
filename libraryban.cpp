@@ -5,6 +5,8 @@
 
 const QString proc_name = "ldd ";
 
+LDA_BEGIN_NAMESPACE
+
 LibraryBan::LibraryBan(QObject *parent) : QLibrary(parent), proc (new QProcess)
 {
     connect(proc, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
@@ -61,3 +63,5 @@ AbstractPlugin *LibraryBan::loadPlugin()
     }
     return nullptr;
 }
+
+LDA_END_NAMESPACE

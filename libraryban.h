@@ -1,13 +1,19 @@
 #ifndef LIBRARYBAN_H
 #define LIBRARYBAN_H
 
+#include "class_decl.h"
+#include "libda_global.h"
+
 #include <QApplication>
 #include <QLibrary>
 
 class QProcess;
+
+LDA_BEGIN_NAMESPACE
+
 class AbstractPlugin;
 
-class AbstractPlugin {
+class LIBDA_SHARED_EXPORT AbstractPlugin {
 public:
     explicit AbstractPlugin(QObject *p = nullptr);
     virtual ~AbstractPlugin();
@@ -65,5 +71,7 @@ private:
     QProcess *proc;
     bool m_ban = false;
 };
+
+LDA_END_NAMESPACE
 
 #endif // LIBRARYBAN_H

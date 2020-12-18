@@ -1,6 +1,5 @@
 #include "dynamicsvgparser.h"
 
-
 #include <iostream>
 #include <QFile>
 #include <QDomNode>
@@ -98,6 +97,8 @@ QIcon svg2Icon(const QByteArray& svgContent, QPainter::CompositionMode mode = QP
        return QIcon(*svg2Pixmap(svgContent, QSize(128, 128), mode));
 }
 
+LDA_BEGIN_NAMESPACE
+
 DynamicSvgParser::DynamicSvgParser(QByteArray arr, QPalette source, QObject *parent) : QObject(parent)
 {
     src = source;
@@ -154,3 +155,5 @@ void DynamicSvgParser::setToggled(bool tog) { toggled = tog; }
 void DynamicSvgParser::setCaching(bool cac) { caching = cac; }
 void DynamicSvgParser::setInput(QByteArray arr) { data = arr; }
 void DynamicSvgParser::setSource(QPalette source) { src = source; }
+
+LDA_END_NAMESPACE

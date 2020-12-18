@@ -1,14 +1,19 @@
 #ifndef DYNAMICSVGPARSER_H
 #define DYNAMICSVGPARSER_H
 
+#include "class_decl.h"
+#include "libda_global.h"
+
 #include <QPalette>
+
+LDA_BEGIN_NAMESPACE
 
 /**
  * @brief DynamicSvgParser provides good interface and features for "dynamic" SVGs: some colors can be the ones of the cureent palette!
  * @brief While using fill prop., use: ${value} or ${value1|value2}, if one is provided, the same will be used in every states.
  * @brief To use a QPalette property, use $<QPalette::ColorRole> and as text. Otherwise, you can use a custom value too.
  */
-class DynamicSvgParser : public QObject
+class LIBDA_SHARED_EXPORT DynamicSvgParser : public QObject
 {
     Q_OBJECT
 public:
@@ -77,5 +82,7 @@ private:
     QPixmap *firstVersion = nullptr;
     QPixmap *secondVersion = nullptr;
 };
+
+LDA_END_NAMESPACE
 
 #endif // DYNAMICSVGPARSER_H
