@@ -1,5 +1,5 @@
 # DA
-Dtk (Deepin Toolkit) addons library
+Dtk (Deepin Toolkit) addons library. Its name is LibDA (LDA), and in the system, it is liblibDA, or for now at least.
 
 ## What is it?
 That's a library to have many components easily extensible, fast to handle and documented in the headers for your favorite DE and your comprehension when you search a class member. The classes in this library are not officially part of Dtk, but is a suite of addons. It can handle mouse and finger gestures faster and easily, with a template class integrated (SwipingGesture with VisualStackElement) or extend exisiting components part of Dtk (like DBlurEffect -> EffectWidget that has more in-window effects, or SwipingGestures that enhances Qt's QGesture's family). This is (for the moment) built as a trick library to have somethings already made (like DSplittedWindow nor it bar), or the auto debugging DApplication derivate (DAddonApplication).
