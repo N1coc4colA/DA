@@ -30,10 +30,21 @@ namespace Addons {
     class SwipingGesture;
     class TouchInterfacing;
     class IOD;
+    class VisualStackElement;
     class StackedSlideWidget;
     class DotsSlideTabs;
     /*23/11/20*/
     class DynamicSvgParser;
+    /*20/12/20*/ /*XML Widget Engine components*/
+    class SharedNAM;
+    class XWEngine;
+    class TranslationEngine;
+    class AbstractElement;
+    class HBoxLayout;
+    class VBoxLayout;
+    class Widget;
+    class lineEdit;
+    class Label;
 }
 }
 

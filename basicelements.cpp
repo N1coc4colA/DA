@@ -12,7 +12,7 @@ QObject *LineEdit::self() {return this;}
 QObject *Widget::self() {return this;}
 QObject *Label::self() {return this;}
 
-Widget::Widget() : QWidget(), AbstractElement () { this->show();}
+Widget::Widget() : QWidget(), AbstractElement () {}
 VBoxLayout::VBoxLayout() : QVBoxLayout(), AbstractElement() {}
 HBoxLayout::HBoxLayout() : QHBoxLayout(), AbstractElement() {}
 LineEdit::LineEdit() : QLineEdit(), AbstractElement() {}

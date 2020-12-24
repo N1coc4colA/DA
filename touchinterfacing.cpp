@@ -21,6 +21,12 @@ TouchInterfacing::TouchInterfacing(QWidget *source, TouchInterfacing *face)
 TouchInterfacing::~TouchInterfacing()
 {
     m_system->destroyInterface(this);
+    if (m_swipe != nullptr) {
+        m_swipe->~SwipingGesture();
+    }
+    if (pointSource != nullptr) {
+        pointSource->~QPoint();
+    }
 }
 
 void TouchInterfacing::enableEventRedirection(bool enable)

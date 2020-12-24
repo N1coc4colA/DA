@@ -23,6 +23,8 @@ ImagePopup::ImagePopup(QWidget *parent)
 
 ImagePopup::~ImagePopup()
 {
+    close->~DDialogCloseButton();
+    img->~DLabel();
 }
 
 void ImagePopup::open(QImage &im)

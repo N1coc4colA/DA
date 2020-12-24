@@ -14,10 +14,7 @@ class LIBDA_SHARED_EXPORT SharedNAM : public QNetworkAccessManager
 public:
     explicit SharedNAM(QObject *p = nullptr);
     QNetworkReply *pendingGet(const QNetworkRequest &);
-    inline static SharedNAM *instance() {
-        static SharedNAM *snam = new SharedNAM;
-        return snam;
-    }
+    static SharedNAM *instance();
 };
 
 LDA_END_NAMESPACE

@@ -48,6 +48,7 @@ class LIBDA_SHARED_EXPORT DAddonSplittedBar : public QFrame, public DTK_CORE_NAM
 
 public:
     explicit DAddonSplittedBar(QWidget *parent = Q_NULLPTR);
+    ~DAddonSplittedBar();
 
 #ifndef QT_NO_MENU
     /**
@@ -328,7 +329,6 @@ private:
     bool isHidden = false;
     bool isMaximized = false;
     QMenu *m_iconMenu;
-    QTimer *timer;
     int oldHeight = 40;
 
     QColor getColor();

@@ -215,7 +215,7 @@ void DAddonSplittedBarPrivate::init()
     centerArea->setBackgroundRole(QPalette::NoRole);
     centerArea->setAlignment(Qt::AlignCenter);
     centerArea->setWordWrap(true);
-    centerArea->setMaximumWidth(q->left_margin);
+    //centerArea->setMaximumWidth(q->left_margin);
 
     buttonArea->setWindowFlag(Qt::WindowTransparentForInput);
     buttonArea->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
@@ -669,6 +669,13 @@ DAddonSplittedBar::DAddonSplittedBar(QWidget *parent) :
     }
     this->setObjectName("DAddonSplittedBar");
     this->setIcon(qApp->windowIcon());
+}
+
+DAddonSplittedBar::~DAddonSplittedBar()
+{
+    if (logic != nullptr) {
+        logic->~QTimer();
+    }
 }
 
 void DAddonSplittedBar::slideDown()

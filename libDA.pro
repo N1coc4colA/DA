@@ -35,99 +35,20 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-SOURCES += \
-    notificationmanager.cpp \
-    diconic.cpp \
-    daddonapplication.cpp \
-    daddonbutton.cpp \
-    daddonsplittedwindow.cpp \
-    daddonsplittedbar.cpp \
-    elementlist.cpp \
-    element.cpp \
-    proxypainter.cpp \
-    emptyitemdelegate.cpp \
-    libraryban.cpp \
-    effectwidget.cpp \
-    graphictools.cpp \
-    imagepopup.cpp \
-    multicolors.cpp \
-    trayicon.cpp \
-    macros.cpp \
-    wintools.cpp \
-    pwl.cpp \
-    indraggablewidget.cpp \
-    iod.cpp \
-    touchsystem.cpp \
-    touchinterfacing.cpp \
-    swipinggesture.cpp \
-    stackedslidewidget.cpp \
-    dotsslidetabs.cpp \
-    dynamicsvgparser.cpp \
-    abstractelement.cpp \
-    basicelements.cpp \
-    daddonapplication.cpp \
-    daddonbutton.cpp \
-    daddonsplittedbar.cpp \
-    daddonsplittedwindow.cpp \
-    diconic.cpp \
-    dotsslidetabs.cpp \
-    dynamicsvgparser.cpp \
-    effectwidget.cpp \
-    element.cpp \
-    elementlist.cpp \
-    emptyitemdelegate.cpp \
-    graphictools.cpp \
-    imagepopup.cpp \
-    indraggablewidget.cpp \
-    iod.cpp \
-    libraryban.cpp \
-    macros.cpp \
-    multicolors.cpp \
-    notificationmanager.cpp \
-    proxypainter.cpp \
-    pwl.cpp \
-    sharednam.cpp \
-    stackedslidewidget.cpp \
-    swipinggesture.cpp \
-    touchinterfacing.cpp \
-    touchsystem.cpp \
-    translationengine.cpp \
-    trayicon.cpp \
-    visualstackelement.cpp \
-    wintools.cpp \
-    xwengine.cpp
+
+unix {
+    target.path = /usr/lib
+    INSTALLS += target
+}
+
+SUBDIRS += \
+    libDA.pro \
+    libDA.pro
+
+RESOURCES += \
+    main.qrc
 
 HEADERS += \
-        libda_global.h \ 
-    class_decl.h \
-    daddonbutton.h \
-    diconic.h \
-    daddonapplication.h \
-    daddonsplittedbar.h \
-    daddonsplittedwindow.h \
-    notificationmanager.h \
-    elementlist.h \
-    element.h \
-    proxypainter.h \
-    emptyitemdelegate.h \
-    libraryban.h \
-    effectwidget.h \
-    graphictools.h \
-    effectwidget_p.h \
-    imagepopup.h \
-    multicolors.h \
-    trayicon.h \
-    macros.h \
-    wintools.h \
-    pwl.h \
-    indraggablewidget.h \
-    iod.h \
-    touchsystem.h \
-    touchinterfacing.h \
-    swipinggesture.h \
-    stackedslidewidget.h \
-    dotsslidetabs.h \
-    dynamicsvgparser.h \
     abstractelement.h \
     basicelements.h \
     class_decl.h \
@@ -165,13 +86,37 @@ HEADERS += \
     wintools.h \
     xwengine.h
 
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
-}
-
-SUBDIRS += \
-    libDA.pro
-
-RESOURCES += \
-    main.qrc
+SOURCES += \
+    abstractelement.cpp \
+    basicelements.cpp \
+    daddonapplication.cpp \
+    daddonbutton.cpp \
+    daddonsplittedbar.cpp \
+    daddonsplittedwindow.cpp \
+    diconic.cpp \
+    dotsslidetabs.cpp \
+    dynamicsvgparser.cpp \
+    effectwidget.cpp \
+    element.cpp \
+    elementlist.cpp \
+    emptyitemdelegate.cpp \
+    graphictools.cpp \
+    imagepopup.cpp \
+    indraggablewidget.cpp \
+    iod.cpp \
+    libraryban.cpp \
+    macros.cpp \
+    multicolors.cpp \
+    notificationmanager.cpp \
+    proxypainter.cpp \
+    pwl.cpp \
+    sharednam.cpp \
+    stackedslidewidget.cpp \
+    swipinggesture.cpp \
+    touchinterfacing.cpp \
+    touchsystem.cpp \
+    translationengine.cpp \
+    trayicon.cpp \
+    visualstackelement.cpp \
+    wintools.cpp \
+    xwengine.cpp

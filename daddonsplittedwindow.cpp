@@ -59,6 +59,13 @@ DAddonSplittedWindow::DAddonSplittedWindow(QWidget *parent, bool blur, DBlurEffe
     connect(act, &QAction::triggered, this, &DAddonSplittedWindow::switchFullScreen);
 }
 
+DAddonSplittedWindow::~DAddonSplittedWindow()
+{
+
+    m_bar->~DAddonSplittedBar();
+    m_leftw->~DBlurEffectWidget();
+}
+
 bool DAddonSplittedWindow::eventFilter(QObject *obj, QEvent *ev)
 {
     if (obj && m_bottomw && obj == m_bottomw) {

@@ -7,6 +7,11 @@ LDA_BEGIN_NAMESPACE
 
 SharedNAM::SharedNAM(QObject *p) : QNetworkAccessManager(p) {}
 
+SharedNAM *SharedNAM::instance() {
+    static SharedNAM *snam = new SharedNAM;
+    return snam;
+}
+
 QNetworkReply *SharedNAM::pendingGet(const QNetworkRequest &req)
 {
     QEventLoop loop;
