@@ -215,7 +215,7 @@ DAddonApplication::DAddonApplication(int &argc, char **argv) : DApplication(argc
 
 DAddonApplication::~DAddonApplication()
 {
-    appBinPath.~QString();
+    //appBinPath.~QString();
 }
 
 void DAddonApplication::handleQuitAction() { this->DApplication::handleQuitAction(); }

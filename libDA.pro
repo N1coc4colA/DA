@@ -13,7 +13,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
   else: QT += platformsupport-private
 }
 
-CONFIG += link_pkgconfig
+CONFIG += link_pkgconfig debug
 PKGCONFIG = dtkwidget dtkcore dtkgui x11 glib-2.0
 
 unix:!macx: LIBS += -lKF5WindowSystem
