@@ -5,6 +5,7 @@
 #include <iostream>
 #include <QDomElement>
 #include <QMetaProperty>
+#include <QMetaMethod>
 #include <QLocale>
 
 LDA_BEGIN_NAMESPACE
@@ -59,6 +60,68 @@ AbstractElement *XWEngine::generateInstance(QString elementType, QString)
     }
 }
 
+bool XWEngine::generateConnection(QMap<QString, QVariant> propertiesMatched)
+{
+    if (propertiesMatched.contains("source")) {
+        if (propertiesMatched.contains("target")) {
+            if (propertiesMatched.contains("signal")) {
+                if (propertiesMatched.contains("triggers")) {
+                    if (elements[propertiesMatched["source"].toString()]->self() != nullptr) {
+                        if (elements[propertiesMatched["target"].toString()]->self() != nullptr) {
+
+                            const QMetaObject *metaobj = elements[propertiesMatched["target"].toString()]->self()->metaObject();
+                            bool targetFuncAuth = false;
+                            for(int i = metaobj->methodOffset();i < metaobj->methodCount();i++){
+                                QMetaMethod metamethod = metaobj->method(i);
+                                if (metamethod.methodSignature() == propertiesMatched["triggers"]) {
+                                    targetFuncAuth = true;
+                                }
+                            }
+
+                            metaobj = elements[propertiesMatched["source"].toString()]->self()->metaObject();
+                            bool sourceFuncAuth = false;
+                            for(int i = metaobj->methodOffset();i < metaobj->methodCount();i++){
+                                QMetaMethod metamethod = metaobj->method(i);
+                                if (metamethod.methodSignature() == propertiesMatched["signal"]) {
+                                    sourceFuncAuth = true;
+                                }
+                            }
+
+                            if (sourceFuncAuth) {
+                                if (targetFuncAuth) {
+                                    connect(elements[propertiesMatched["source"].toString()]->self(), propertiesMatched["signal"].toString().toLocal8Bit().data(),
+                                            elements[propertiesMatched["target"].toString()]->self(), propertiesMatched["triggers"].toString().toLocal8Bit().data());
+                                    return true;
+                                } else {
+                                    std::cout << "XWE Flaw > Connections: unable to find connect's trigger method \"" <<
+                                                 propertiesMatched["triggers"].toString().toLocal8Bit().data() << "\"."  << std::endl;
+                                }
+                            } else {
+                                std::cout << "XWE Flaw > Connections: unable to find connect's signal method \"" <<
+                                             propertiesMatched["triggers"].toString().toLocal8Bit().data() << "\"."  << std::endl;
+                            }
+                        } else {
+                            std::cout << "XWE Flaw > Connections: impossible to reach connect's target \"" <<
+                                         propertiesMatched["target"].toString().toLocal8Bit().data() << "\"."  << std::endl;
+                        }
+                    } else {
+                        std::cout << "XWE Flaw > Connections: impossible to reach connect's source \"" <<
+                                     propertiesMatched["target"].toString().toLocal8Bit().data() << "\"."  << std::endl;
+                    }
+                } else {
+                    std::cout << "XWE Flaw > Connections: no triggers (target function for the target) provided." << std::endl;
+                }
+            } else {
+                std::cout << "XWE Flaw > Connections: no signal provided." << std::endl;
+            }
+        } else {
+            std::cout << "XWE Flaw > Connections: no source provided." << std::endl;
+        }
+    } else {
+        std::cout << "XWE Flaw > Connections: no target provided." << std::endl;
+    }
+    return false;
+}
 
 void XWEngine::generateTree(AbstractElement *p, QDomNode root)
 {
@@ -77,7 +140,7 @@ void XWEngine::generateTree(AbstractElement *p, QDomNode root)
 
         if (attr == "id") {
             if (elements.contains(val)) {
-                std::cout << "XWE Flaw: ID duplication." << std::endl;
+                std::cout << "XWE Flaw > Identifiers: duplication of identifier \"" << val.toLocal8Bit().data() << "\"" << std::endl;
             }
             ID = val;
             hasID = true;
@@ -118,6 +181,8 @@ void XWEngine::generateTree(AbstractElement *p, QDomNode root)
         }
 
         needsTranslations = needsTs;
+    } else if (root.nodeName() == "connect") { //Create connections from QMetaObject
+        generateConnection(propertiesMatched);
     }
 
     //Adds as root
@@ -132,20 +197,99 @@ void XWEngine::generateTree(AbstractElement *p, QDomNode root)
         //Check and set the properties
         while (i < propertiesMatched.keys().length()) {
             QString currProp = propertiesMatched.keys().at(i);
-            if (needsTranslations && propertiesMatched[currProp].toString().startsWith("§")) {
-                inst->self()->setProperty(currProp.toLatin1(), tsEngine.translate(propertiesMatched[currProp].toString()));
+
+            //If the property is a lookup, we get the value now.
+            if (propertiesMatched[currProp].toString().startsWith("@")) {
+                QString val = propertiesMatched[currProp].toString().remove(0, 1);
+                if (val.startsWith("query(") && val.endsWith(")")) {
+                    val = val.remove(0, 6).remove(val.length() - 1, 1);
+                    QStringList data = val.split(", ");
+
+
+                } else if (val.startsWith("dynprop(") && val.endsWith(")")) {
+                    //If the property is dynamic, we connect signals now.
+                    val = val.remove(0, 8).remove(val.length() - 1, 1);
+                    QStringList data = val.split(", ");
+
+                    //Check if a notifier of values changes exists first.
+                    if (elements[data[0]]->self()) {
+                        const QMetaObject *senderMeta = elements[data[0]]->self()->metaObject();
+                        int index = senderMeta->indexOfProperty(data[1].toLocal8Bit().data());
+
+                        bool hasNotifier = false;
+                        QString notifier = "";
+                        QString writter = "";
+
+                        if (index != -1) {
+                            const QMetaProperty property = senderMeta->property(index);
+                            if (property.hasNotifySignal()) {
+                                const QMetaMethod notifySignal = property.notifySignal();
+                                hasNotifier = true;
+                                notifier = notifySignal.methodSignature();
+                            }
+
+                            if (hasNotifier) {
+                                //Then connect 'em
+                                //We separate it of the generateConnect as it's a "hidden" way, we connect but that's not so obvious, so in that case, we generate special warnings.
+                                //We suppose every one's using the Qt's advisories to declare props and how to write 'em.
+                                writter = QString(property.name() + QString("Changed(") + property.typeName() + ")");
+
+                                if (((bool)(connect(elements[data[0]]->self(), notifier.toLocal8Bit().data(), inst->self(), writter.toLocal8Bit().data()))) == false) {
+                                    std::cout << "XWE Flaw > AutoConnections (From functional \"dynprop("
+                                              << data[0].toLocal8Bit().data() << ", "
+                                              << data[1].toLocal8Bit().data() << ")\"): unable to connect with slot \""
+                                              << writter.toLocal8Bit().data() << "\", Type: \""
+                                              << root.nodeName().toLocal8Bit().data() << "\", ID: \""
+                                              << ID.toLocal8Bit().data() << "\". Try to make connection manually to fix it."
+                                              << std::endl;
+                                }
+                            } else {
+                                std::cout << "XWE Flaw > Properties: unable to find a valid signal to update the property. ID: \""
+                                          << data[0].toLocal8Bit().data() << "\", Property: \""
+                                          << data[1].toLocal8Bit().data() << "\", using actual value instead."
+                                          << std::endl;
+                                inst->self()->setProperty(root.nodeName().toLocal8Bit().data(), elements[data[0]]->self()->property(data[1].toLocal8Bit().data()));
+                            }
+                        } else {
+                            std::cout << "XWEngine Flaw > Properties: unable to find Property: \""
+                                      << data[1].toLocal8Bit().data() << "\", of Object of ID: \""
+                                      << data[0].toLocal8Bit().data()
+                                      << std::endl;
+                        }
+                    } else {
+                        std::cout << "XWE Flaw > Identifiers: unable to find object of ID: \""
+                                  << data[0].toLocal8Bit().data() << "\"."
+                                  << std::endl;
+                    }
+                } else {
+                    std::cout << "XWE Flaw > Functionals: unable to find or run functional: \""
+                              << propertiesMatched[currProp].toString().toLocal8Bit().data() << "\"."
+                              << std::endl;
+                }
             } else {
-                inst->self()->setProperty(currProp.toLatin1(), propertiesMatched[currProp]);
+                //Means it may need Tr.
+                if (needsTranslations && propertiesMatched[currProp].toString().startsWith("§")) {
+                    inst->self()->setProperty(currProp.toLatin1(), tsEngine.translate(propertiesMatched[currProp].toString()));
+                } else {
+                    QVariant var = propertiesMatched[currProp];
+                    if (var.toString().startsWith("\\§") && !var.toString().startsWith("\\@")) {//If we want to use "@" or "§" but not in the way we've defined them.
+                        var = var.toString().remove(0, 1);
+                    }
+                    inst->self()->setProperty(currProp.toLatin1(), var);
+                }
             }
             i++;
         }
-    } else if (root.nodeName() != "content") {
-        std::cout << "XWE Flaw: no valid self instance (QObject *) provided (nullptr), undetermined behaviour. Skiped properties setup." << std::endl;
+    } else if (root.nodeName() != "content" && root.nodeName() != "connect") {
+        std::cout << "XWE Flaw > Properties: no valid self instance provided, undetermined behaviour, properties setup skipped. Type: \""
+                  << root.nodeName().toLocal8Bit().data() << "\", ID: \""
+                  << ID.toLocal8Bit().data() << "\"."
+                  << std::endl;
     }
 
     //Identification
-    if ((hasID == false || ID == "") && root.nodeName() != "content") {
-        std::cout << "XWE Flaw: no ID provided, possible inaccessibility or inconsistency." << std::endl;
+    if ((hasID == false || ID == "") && root.nodeName() != "content" && root.nodeName() != "connect") {
+        std::cout << "XWE Flaw > Identifiers: no ID provided, possible inaccessibility or inconsistency." << std::endl;
     } else {
         elements[ID] = inst;
         if (inst != nullptr && inst->self() != nullptr) {
@@ -156,11 +300,11 @@ void XWEngine::generateTree(AbstractElement *p, QDomNode root)
     //Parent appending
     if (p != nullptr && mustAddToParent == true && parentID != "") {
         elements[parentID]->addElement(inst);
-    } else {
-        if (mustAddToParent == true) {
-            std::cout << "XWE Flaw: trying to add element to unexistent component: " << root.nodeName().toLocal8Bit().data()
-                      << ", " << ID.toLocal8Bit().data() << std::endl;
-        }
+    } else if (mustAddToParent == true) {
+            std::cout << "XWE Flaw > Containering and Parenting: trying to add element to unexistent component of Type: \""
+                      << root.nodeName().toLocal8Bit().data() << "\", ID: \""
+                      << ID.toLocal8Bit().data() << "\"."
+                      << std::endl;
     }
 
     i = 0;
