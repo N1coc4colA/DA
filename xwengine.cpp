@@ -53,6 +53,7 @@ AbstractElement *XWEngine::generateInstance(QString elementType, QString)
         return new LineEdit;
     } else if (elementType == "Label") {
         return new Label;
+    } else if (elementType == "script") {
     } else {
         std::cout << "XWE Flaw: unknown type of element: " << elementType.toLocal8Bit().data()
                   << ", it may lead to bugs." << std::endl;
@@ -153,7 +154,6 @@ void XWEngine::generateTree(AbstractElement *p, QDomNode root)
             //QObject set props
             propertiesMatched[attr] = val;
         }
-
         i++;
     }
 
@@ -205,11 +205,11 @@ void XWEngine::generateTree(AbstractElement *p, QDomNode root)
                     val = val.remove(0, 6).remove(val.length() - 1, 1);
                     QStringList data = val.split(", ");
 
-
                 } else if (val.startsWith("dynprop(") && val.endsWith(")")) {
                     //If the property is dynamic, we connect signals now.
                     val = val.remove(0, 8).remove(val.length() - 1, 1);
                     QStringList data = val.split(", ");
+                    inst->self()->setProperty(currProp.toLocal8Bit().data(), elements[data[0]]->self()->property(data[1].toLocal8Bit().data()));
 
                     //Check if a notifier of values changes exists first.
                     if (elements[data[0]]->self()) {
