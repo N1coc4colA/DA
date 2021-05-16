@@ -41,6 +41,8 @@
 #include <sys/stat.h>
 #include <signal.h>
 
+#include <mcheck.h>
+
 #include <QProcess>
 #include <DApplication>
 #include <QSettings>
@@ -60,6 +62,8 @@ const int MAX_STACK_FRAMES = 128;
 const QString strPath = QStandardPaths::standardLocations(QStandardPaths::ConfigLocation)[0] + "/dde-collapse.log";
 const QString cfgPath = QStandardPaths::standardLocations(QStandardPaths::ConfigLocation)[0] + "/dde-cfg.ini";
 QString appBinPath = "None";
+bool active_mtrace = false;
+bool enableDebug = false;
 
 std::string Backtrace(int skip = 1)
 {
@@ -200,10 +204,32 @@ void handleSignals [[ noreturn ]] (int sig)
         sigVal.~QString();
         appBinPath.~QString();
 
+        if (active_mtrace) {
+            muntrace();
+        }
+
         exit(sig);
 }
 
-DAddonApplication::DAddonApplication(int &argc, char **argv) : DApplication(argc, argv) {
+DAddonApplication::DAddonApplication(int &argc, char **argv, bool enforce) : DApplication(argc, argv)
+{
+    std::cout << "You are currently using LDA, Lib Dtk Addons, by @n1coc4cola, GNU Public License V3." << std::endl;
+
+    int i = 0;
+    while (i < argc) {
+        if (strcmp(argv[i], "--enable-mtrace")) {
+            mtrace();
+        } else if (enforce == false && strcmp(argv[i], "--enable-cdbg")) {
+            std::cout << "Enabled Console Debugging (CDBG) for library internal messages." << std::endl;
+            enableDebug = true;
+        }
+        i++;
+    }
+
+    if (enforce) {
+        enableDebug = true;
+    }
+
     signal(SIGTERM, handleSignals);
     signal(SIGSEGV, handleSignals);
     signal(SIGILL, handleSignals);
@@ -216,6 +242,9 @@ DAddonApplication::DAddonApplication(int &argc, char **argv) : DApplication(argc
 DAddonApplication::~DAddonApplication()
 {
     //appBinPath.~QString();
+    if (active_mtrace) {
+        muntrace();
+    }
 }
 
 void DAddonApplication::handleQuitAction() { this->DApplication::handleQuitAction(); }
@@ -235,6 +264,16 @@ void DAddonApplication::toggleHoverEffects()
 bool DAddonApplication::areHoverEffectsEnabled()
 {
     return this->styleHints()->useHoverEffects();
+}
+
+bool DAddonApplication::is_mtrace_active()
+{
+    return active_mtrace;
+}
+
+bool DAddonApplication::isConsoleDebug()
+{
+    return enableDebug;
 }
 
 LDA_END_NAMESPACE

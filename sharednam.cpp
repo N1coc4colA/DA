@@ -2,6 +2,7 @@
 
 #include <QEventLoop>
 #include <QtNetwork/QNetworkReply>
+#include <QTimer>
 
 LDA_BEGIN_NAMESPACE
 
@@ -12,11 +13,12 @@ SharedNAM *SharedNAM::instance() {
     return snam;
 }
 
-QNetworkReply *SharedNAM::pendingGet(const QNetworkRequest &req)
+QNetworkReply *SharedNAM::pendingGet(const QNetworkRequest &req, int msTimeout)
 {
     QEventLoop loop;
     QNetworkReply *rep = this->get(req);
     connect(rep, &QNetworkReply::finished, &loop, &QEventLoop::quit);
+    QTimer::singleShot(msTimeout, rep, &QNetworkReply::abort);
     loop.exec();
     return rep;
 }

@@ -1,6 +1,7 @@
 #include "element.h"
 #include "proxypainter.h"
 
+#include <QPainterPath>
 #include <QResizeEvent>
 #include <QMimeData>
 #include <QPainter>

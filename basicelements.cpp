@@ -20,12 +20,14 @@ Label::Label() : QLabel(), AbstractElement() {}
 
 void Widget::addElement(AbstractElement *element)
 {
-    if (element != nullptr) {
-    if (QLayout *lay = qobject_cast<QLayout *>(element->self())) {
-        this->setLayout(lay);
-    } else {
-        element->self()->setParent(this);
-    }
+    if (element) {
+        if (QLayout *lay = qobject_cast<QLayout *>(element->self())) {
+            std::cout << "Has set the layout." << std::endl;
+            this->setLayout(lay);
+        } else {
+            element->self()->setParent(this);
+            std::cout << "Changed target object parenting." << std::endl;
+        }
     }
 }
 

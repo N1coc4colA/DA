@@ -4,6 +4,7 @@
 #include <QApplication>
 #include <QPainter>
 #include <QMouseEvent>
+#include <QPainterPath>
 
 LDA_BEGIN_NAMESPACE
 

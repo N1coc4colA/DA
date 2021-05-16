@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets dbus xml svg network x11extras core-private
+QT       += core gui widgets dbus xml script svg network x11extras core-private
 
 greaterThan(QT_MAJOR_VERSION, 4) {
   QT += widgets widgets-private
@@ -13,14 +13,14 @@ greaterThan(QT_MAJOR_VERSION, 4) {
   else: QT += platformsupport-private
 }
 
-CONFIG += link_pkgconfig debug
+CONFIG += link_pkgconfig debug c++17
 PKGCONFIG = dtkwidget dtkcore dtkgui x11 glib-2.0
 
 unix:!macx: LIBS += -lKF5WindowSystem
 
 TARGET = libDA
 TEMPLATE = lib
-
+VERSION = 1.0.1
 
 DEFINES += LIBDA_LIBRARY
 
@@ -44,9 +44,6 @@ unix {
 SUBDIRS += \
     libDA.pro \
     libDA.pro
-
-RESOURCES += \
-    main.qrc
 
 HEADERS += \
     abstractelement.h \
