@@ -20,7 +20,7 @@ unix:!macx: LIBS += -lKF5WindowSystem
 
 TARGET = libDA
 TEMPLATE = lib
-VERSION = 1.0.5
+VERSION = 1.0.5.1
 
 DEFINES += LIBDA_LIBRARY
 

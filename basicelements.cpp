@@ -13,8 +13,8 @@ QObject *Widget::self() {return this;}
 QObject *Label::self() {return this;}
 
 Widget::Widget() : QWidget(), AbstractElement () {}
-VBoxLayout::VBoxLayout() : QVBoxLayout(), AbstractElement() {}
-HBoxLayout::HBoxLayout() : QHBoxLayout(), AbstractElement() {}
+VBoxLayout::VBoxLayout(QWidget *p) : QVBoxLayout(p), AbstractElement() {}
+HBoxLayout::HBoxLayout(QWidget *p) : QHBoxLayout(p), AbstractElement() {}
 LineEdit::LineEdit() : QLineEdit(), AbstractElement() {}
 Label::Label() : QLabel(), AbstractElement() {}
 

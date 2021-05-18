@@ -347,7 +347,7 @@ AbstractElement *XWEngine::instanceSetup(AbstractElement *p, QDomNode root)
 
     //Get instance, and change the object if is singleton
 
-    AbstractElement *inst = ((root.nodeName() != "content" && root.nodeName() != "connect") ? generateInstance(root.nodeName(), passArgs) : nullptr);
+    AbstractElement *inst = ((root.nodeName() != "content" && root.nodeName() != "connect" && root.nodeName() != "call") ? generateInstance(root.nodeName(), passArgs) : nullptr);
 
     if (inst) {
         objC++;
@@ -424,6 +424,29 @@ AbstractElement *XWEngine::instanceSetup(AbstractElement *p, QDomNode root)
                       << std::endl;
         }
         generateConnection(propertiesMatched);
+    } else if (root.nodeName() == "call") {
+        if (!propertiesMatched.contains("target") &&
+            elements[propertiesMatched["target"].toString()] != nullptr &&
+            elements[propertiesMatched["target"].toString()]->self() != nullptr) {
+
+            if (propertiesMatched.contains("func")) {
+                elements[propertiesMatched["target"].toString()]
+                    ->self()
+                        ->metaObject()
+                            ->invokeMethod(
+                                elements[propertiesMatched["target"].toString()]->self(),
+                                propertiesMatched["func"].toString().toLocal8Bit().data()
+                            );
+            } else if (enableDebug) {
+                std::cout << generateIndent(currentIndent)
+                          << "XWE Debug > Unable to use `call` without function specified."
+                          << std::endl;
+            }
+        } else if (enableDebug) {
+            std::cout << generateIndent(currentIndent)
+                      << "XWE Debug > Unable to use `call` without target specified."
+                      << std::endl;
+        }
     }
 
     //Adds as root
@@ -607,7 +630,7 @@ AbstractElement *XWEngine::instanceSetup(AbstractElement *p, QDomNode root)
             }
             i++;
         }
-    } else if (root.nodeName() != "content" && root.nodeName() != "connect" && enableDebug) {
+    } else if (root.nodeName() != "content" && root.nodeName() != "connect" && root.nodeName() != "call" && enableDebug) {
         std::cout << generateIndent(currentIndent)
                   << "XWE Flaw > Properties: no valid self instance provided, undetermined behaviour, properties setup skipped. Type: \""
                   << root.nodeName().toLocal8Bit().data() << "\", ID: \""
@@ -738,7 +761,7 @@ AbstractElement *XWEngine::instanceSetup(AbstractElement *p, QDomNode root)
     }
 
     //Identification
-    if ((hasID == false || ID.isEmpty()) && root.nodeName() != "content" && root.nodeName() != "connect" && enableDebug) {
+    if ((hasID == false || ID.isEmpty()) && root.nodeName() != "content" && root.nodeName() != "connect" && root.nodeName() != "call" && enableDebug) {
         std::cout << generateIndent(currentIndent)
                   << "XWE Flaw > Identifiers: no ID provided, possible inaccessibility or inconsistency, type: \""
                   << root.nodeName().toLocal8Bit().data()
