@@ -92,7 +92,7 @@ void DAddonSplittedWindow::updatePositions()
 
         if (!fillTop) {
             margins += splitedbar()->height();
-            m_rightw->move(m_leftwidth,splitedbar()->height());
+            m_rightw->move(m_leftwidth, splitedbar()->height());
         } else {
             if (m_bar) {
                 if (m_bar->isAutoHidden()) {
@@ -202,11 +202,13 @@ void DAddonSplittedWindow::setFullScreen(bool full)
 void DAddonSplittedWindow::setFillTop(bool enable)
 {
     fillTop = enable;
+    updatePositions();
 }
 
 void DAddonSplittedWindow::setFillBottom(bool enable)
 {
     fillBottom = enable;
+    updatePositions();
 }
 
 void DAddonSplittedWindow::setLeftBlur(bool enable)
