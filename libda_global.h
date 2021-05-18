@@ -6,8 +6,9 @@
 #include "macros.h"
 
 #define LDA_MAJOR 1
-#define LDA_MINOR 0
-#define LDA_REVISION 1
+#define LDA_SUB 0
+#define LDA_MINOR 1
+#define LDA_REVISION 0
 
 #if defined(LIBDA_GLOBAL_H)
     #define LIBDA_SHARED_EXPORT Q_DECL_EXPORT
