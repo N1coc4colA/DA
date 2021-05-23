@@ -21,7 +21,7 @@
 #define LDA_SUB 0
 #define LDA_MINOR 5
 #define LDA_REVISION 1
-#define LDA_STATUS #r
+#define LDA_STATUS "r"
 
 #if defined(LIBDA_GLOBAL_H)
     #define LIBDA_SHARED_EXPORT Q_DECL_EXPORT
