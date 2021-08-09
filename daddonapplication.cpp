@@ -62,6 +62,7 @@ const int MAX_STACK_FRAMES = 128;
 const QString strPath = QStandardPaths::standardLocations(QStandardPaths::ConfigLocation)[0] + "/dde-collapse.log";
 const QString cfgPath = QStandardPaths::standardLocations(QStandardPaths::ConfigLocation)[0] + "/dde-cfg.ini";
 QString appBinPath = "None";
+QString bin_name = "";
 bool active_mtrace = false;
 bool enableDebug = false;
 
@@ -111,7 +112,7 @@ void handleSignals [[ noreturn ]] (int sig)
         }
 
         QSettings settings(cfgPath, QSettings::IniFormat);
-        settings.beginGroup("dde-dock");
+        settings.beginGroup(bin_name);
 
         QDateTime lastDate = QDateTime::fromString(settings.value("lastDate").toString(), "yyyy-MM-dd hh:mm:ss:zzz");
         int collapseNum = settings.value("collapse").toInt();
@@ -215,6 +216,8 @@ DAddonApplication::DAddonApplication(int &argc, char **argv, bool enforce) : DAp
 {
     std::cout << "You are currently using LDA, Lib Dtk Addons, by @n1coc4cola, GNU Public License V3." << std::endl;
 
+    bin_name = QString(argv[0]);
+    
     int i = 0;
     while (i < argc) {
         if (strcmp(argv[i], "--enable-mtrace")) {
