@@ -222,6 +222,7 @@ DAddonApplication::DAddonApplication(int &argc, char **argv, bool enforce) : DAp
     while (i < argc) {
         if (strcmp(argv[i], "--enable-mtrace")) {
             mtrace();
+            active_mtrace = true;
         } else if (enforce == false && strcmp(argv[i], "--enable-cdbg")) {
             std::cout << "Enabled Console Debugging (CDBG) for library internal messages." << std::endl;
             enableDebug = true;
